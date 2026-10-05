@@ -9,7 +9,7 @@ module.exports = {
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000
+        PORT: 3020 // 3000, 3010 and 4000 are used by other apps on the shared server
       },
       error_file: './logs/err.log',
       out_file: './logs/out.log',
