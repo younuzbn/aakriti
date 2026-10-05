@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aakriti — Reports</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --panel: #ffffff;
+      --border: #e8e8ea;
+      --input-border: #d4d4d4;
+      --text: #0a0a0a;
+      --muted: #6b7280;
+      --ui-blue: #2563eb;
+      --ui-blue-soft: #eff6ff;
+      --sidebar-w: 248px;
+      --chip-pending-bg: #eef0f1;
+      --chip-pending-text: #23292c;
+      --chip-finished-bg: #e8e8e8;
+      --chip-finished-text: #404040;
+      --chip-warn-bg: #ebebeb;
+      --chip-warn-text: #525252;
+      --chip-bad-bg: #e0e0e0;
+      --chip-bad-text: #262626;
+      --chip-neutral-bg: #f5f5f5;
+      --chip-neutral-text: #737373;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      font-family: "DM Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    body.role-staff .admin-only { display: none !important; }
+    body.role-admin .staff-only { display: none !important; }
+    .topbar {
+      min-height: 72px;
+      padding: 12px 22px;
+      background: #23292c;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-logo-link { display: flex; align-items: center; line-height: 0; text-decoration: none; }
+    .brand-logo-img { height: 56px; width: auto; max-width: min(360px, 65vw); display: block; object-fit: contain; }
+    .top-link {
+      text-decoration: none;
+      color: #f5f5f4;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
+      padding: 8px 14px;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+    }
+    .top-link:hover { border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .mobile-menu-btn {
+      display: none;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(255,255,255,0.26);
+      background: transparent;
+      border-radius: 10px;
+      color: #f5f5f4;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .mobile-menu-btn:hover { background: rgba(255,255,255,0.08); }
+    .mobile-only { display: none !important; }
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      top: 72px; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 40;
+    }
+    .sidebar-backdrop.is-open { display: block; }
+    .app-wrap { flex: 1; display: flex; width: 100%; max-width: 1600px; margin: 0 auto; }
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 20px 14px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sidebar-brand {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 4px 10px 12px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover { background: #f3f4f6; color: var(--text); }
+    .nav-item.active { background: var(--ui-blue-soft); color: var(--ui-blue); }
+    .nav-item .ni { font-size: 16px; width: 22px; text-align: center; opacity: 0.9; }
+    .nav-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9ca3af; padding: 16px 10px 6px; }
+    .nav-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      min-width: 22px;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 800;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 10px 4px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .sidebar-footer strong { display: block; color: var(--text); font-size: 13px; font-weight: 700; margin-top: 4px; word-break: break-word; }
+    .app-main { flex: 1; min-width: 0; padding: 22px 20px 36px; }
+    @media (min-width: 901px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 72px;
+        width: var(--sidebar-w);
+        height: calc(100vh - 72px);
+        min-height: calc(100vh - 72px);
+        overflow-y: auto;
+        z-index: 25;
+        box-shadow: 1px 0 0 var(--border);
+      }
+      .app-main { margin-left: var(--sidebar-w); }
+    }
+    @media (max-width: 900px) {
+      .mobile-menu-btn { display: flex; }
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 72px;
+        height: calc(100dvh - 72px);
+        width: min(var(--sidebar-w), 85vw);
+        transform: translateX(-110%);
+        transition: transform 0.24s ease;
+        z-index: 50;
+        overflow-y: auto;
+      }
+      .sidebar.is-open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.15); }
+      .app-main { margin-left: 0 !important; }
+      .mobile-only { display: flex !important; }
+      .topbar .top-link { display: none; }
+      .app-main { padding: 16px 12px 32px; }
+      .filter-panel { padding: 16px 14px; }
+      .filter-panel-title { margin-bottom: 12px; }
+      .main-head { margin-bottom: 16px; }
+      .main-head h1 { font-size: 1.4rem; }
+    }
+    .main-head { margin-bottom: 20px; }
+    .main-head h1 { margin: 0 0 4px; font-size: clamp(1.4rem, 4vw, 1.85rem); font-weight: 800; letter-spacing: -0.02em; }
+    .main-head p { margin: 0; font-size: 15px; color: var(--muted); max-width: 42rem; line-height: 1.5; }
+    .report-subnav {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .report-subnav-btn {
+      border: none;
+      background: transparent;
+      color: #374151;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+    .report-subnav-btn:hover { background: #f3f4f6; }
+    .report-subnav-btn.active { background: var(--ui-blue-soft); color: var(--ui-blue); }
+
+    .filter-panel {
+      background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px 22px;
+      margin-bottom: 24px;
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 4px 24px rgba(15, 23, 42, 0.04);
+    }
+    .filter-panel-title {
+      margin: 0 0 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .filter-panel-inner {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) minmax(200px, 1.5fr) auto;
+      gap: 16px 20px;
+      align-items: end;
+    }
+    @media (max-width: 720px) {
+      .filter-panel-inner { grid-template-columns: 1fr; }
+    }
+    .filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      letter-spacing: 0.01em;
+    }
+    .field-input,
+    .field-select {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .field-select {
+      cursor: pointer;
+      padding-right: 40px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 18px;
+    }
+    .field-input::placeholder { color: #94a3b8; font-weight: 400; }
+    .field-input:hover,
+    .field-select:hover { border-color: #cbd5e1; }
+    .field-input:focus,
+    .field-select:focus {
+      outline: none;
+      border-color: var(--ui-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    }
+    .field-label--spacer {
+      visibility: hidden;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.25;
+      min-height: 1.25em;
+      user-select: none;
+    }
+    .btn-primary {
+      height: 46px;
+      padding: 0 24px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: filter 0.15s ease, transform 0.1s ease;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { filter: brightness(1.06); }
+    .btn-primary:active { transform: translateY(1px); }
+    .btn-outline {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 11px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+    }
+    .btn-outline:hover {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+      color: var(--text);
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+    .card-head {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .head-actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .card-head h3 { margin: 0; font-size: 16px; font-weight: 700; }
+    .table-wrap { overflow-x: auto; border-radius: 0 0 16px 16px; }
+    table.appt-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    th {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      background: #f8f9fa;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      white-space: nowrap;
+    }
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(37,99,235,0.025); }
+    .td-name { font-weight: 600; line-height: 1.3; }
+    .td-name-sub { font-size: 12px; color: var(--muted); margin-top: 2px; font-weight: 400; }
+    .td-mobile { font-size: 13px; font-variant-numeric: tabular-nums; color: #374151; }
+    .td-staff { max-width: 160px; }
+    .td-meta { font-size: 12px; color: var(--muted); }
+    .td-actions { white-space: nowrap; }
+    /* Mobile report cards */
+    .report-cards { display: flex; flex-direction: column; }
+    .report-card {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .report-card:last-child { border-bottom: none; }
+    .report-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .report-card-name {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .report-card-mobile {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .report-card-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+    .report-card-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .report-card-row-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      flex-shrink: 0;
+      min-width: 70px;
+    }
+    .report-card-row-value { color: var(--text); flex: 1; }
+    .report-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .report-card-time { font-size: 11px; color: var(--muted); }
+    .gender-pip {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .gender-pip.male { background: #dbeafe; color: #1d4ed8; }
+    .gender-pip.female { background: #fce7f3; color: #be185d; }
+    .chip {
+      border-radius: 99px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-block;
+      text-transform: lowercase;
+    }
+    .chip.pending { background: var(--chip-pending-bg); color: var(--chip-pending-text); }
+    .chip.finished { background: var(--chip-finished-bg); color: var(--chip-finished-text); }
+    .chip.unreachable { background: var(--chip-warn-bg); color: var(--chip-warn-text); }
+    .chip.no_show { background: var(--chip-bad-bg); color: var(--chip-bad-text); }
+    .chip.cancelled { background: var(--chip-neutral-bg); color: var(--chip-neutral-text); }
+    .action-dd { position: relative; z-index: 1; }
+    .action-dd[open] { z-index: 30; }
+    .action-dd-sum {
+      list-style: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      background: #fff;
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      user-select: none;
+    }
+    .action-dd-sum::-webkit-details-marker { display: none; }
+    .action-dd-list {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      margin: 0;
+      padding: 6px;
+      list-style: none;
+      min-width: 220px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(10, 10, 10, 0.12);
+    }
+    .action-dd-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      margin: 0;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .action-dd-item:hover { background: rgba(35, 41, 44, 0.06); }
+    .action-dd-item.danger { font-weight: 600; }
+    .action-dd-sep { height: 1px; margin: 6px 8px; background: var(--border); list-style: none; }
+    .empty { padding: 32px 20px; text-align: center; color: var(--muted); }
+    .err { padding: 14px; border-radius: 12px; background: #fef2f2; color: #991b1b; font-size: 14px; display: none; margin-bottom: 16px; }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .summary-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px;
+    }
+    .summary-label { margin: 0; font-size: 12px; color: var(--muted); }
+    .summary-value { margin: 4px 0 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+    .stylist-works {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 180px;
+      overflow: auto;
+    }
+    .stylist-works li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      color: #4b5563;
+      background: #f9fafb;
+      border: 1px solid #f0f2f3;
+      border-radius: 8px;
+      padding: 6px 8px;
+    }
+    /* Keep side-menu shell identical to dashboard */
+    .sidebar-backdrop {
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 90;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .sidebar-backdrop.is-open { display: block; opacity: 1; visibility: visible; }
+    @media (max-width: 900px) {
+      .app-wrap { flex-direction: column; }
+      .sidebar {
+        top: 0;
+        width: min(320px, 88vw);
+        height: 100dvh;
+        z-index: 100;
+        box-shadow: 10px 0 30px rgba(15, 23, 42, 0.14);
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+        padding: 14px 12px 16px;
+        overflow-x: hidden;
+      }
+      .sidebar.is-open { transform: translateX(0); }
+      .app-main { padding: 18px 14px 30px; }
+      .summary-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button type="button" class="mobile-menu-btn" id="btnOpenSideMenu" aria-label="Open menu">☰</button>
+    <a class="brand-logo-link" href="/aakriti/dashboard" aria-label="Aakriti">
+      <img class="brand-logo-img" src="/aakriti-logo.png" alt="Aakriti Boutique &amp; Makeup Studio" />
+    </a>
+    <button type="button" class="top-link" onclick="portalLogout()">Log out</button>
+  </header>
+
+  <div class="sidebar-backdrop" id="sideMenuBackdrop" aria-hidden="true"></div>
+
+  <div class="app-wrap">
+    <aside class="sidebar" id="sideMenu" aria-label="Main navigation">
+      <div class="sidebar-brand">Salon</div>
+      <a class="nav-item" href="/aakriti/dashboard"><span class="ni" aria-hidden="true">▣</span> Dashboard</a>
+      <a class="nav-item" href="/aakriti/dashboard/today-bookings"><span class="ni" aria-hidden="true">☰</span> Today bookings</a>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'"><span class="ni" aria-hidden="true">＋</span> New booking</button>
+      <div class="nav-label">Insights</div>
+      <a class="nav-item" href="/aakriti/dashboard/analytics"><span class="ni" aria-hidden="true">▤</span> Month analytics</a>
+      <a class="nav-item" href="/aakriti/dashboard/customers"><span class="ni" aria-hidden="true">◎</span> Customers</a>
+      <a class="nav-item active" href="/aakriti/dashboard/reports"><span class="ni" aria-hidden="true">▦</span> Reports</a>
+      <div class="nav-label">Queue filters</div>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'">
+        <span class="ni" aria-hidden="true">♂</span> Gents
+        <span class="nav-badge" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'">
+        <span class="ni" aria-hidden="true">♀</span> Ladies
+        <span class="nav-badge" aria-hidden="true"></span>
+      </button>
+      <div class="nav-label admin-only">Management</div>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/stylists"><span class="ni" aria-hidden="true">✂</span> Stylists</a>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/staff"><span class="ni" aria-hidden="true">◉</span> Team &amp; staff</a>
+      <button type="button" class="nav-item admin-only" onclick="location.href='/aakriti/dashboard'"><span class="ni" aria-hidden="true">⚙</span> Booking &amp; Time Settings</button>
+      <div class="nav-label staff-only">Your shift</div>
+      <div class="nav-item staff-only" style="cursor:default;background:#f9fafb;"><span class="ni" aria-hidden="true">✓</span> Queue access</div>
+      <div class="sidebar-footer">
+        Signed in as
+        <strong id="sidebarUser">—</strong>
+      </div>
+      <button type="button" class="nav-item mobile-only" id="sideMenuLogout">
+        <span class="ni" aria-hidden="true">↩</span> Log out
+      </button>
+    </aside>
+
+    <div class="app-main">
+      <header class="main-head">
+        <h1>Reports</h1>
+        <div class="report-subnav" role="tablist" aria-label="Report type">
+          <button type="button" id="btnReportBookings" class="report-subnav-btn active" onclick="switchReportMode('bookings')">Bookings report</button>
+          <button type="button" id="btnReportStylists" class="report-subnav-btn" onclick="switchReportMode('stylists')">Stylist report</button>
+        </div>
+      </header>
+
+      <div id="err" class="err"></div>
+
+      <section id="bookingsFilterPanel" class="filter-panel" aria-label="Report filters">
+        <h2 class="filter-panel-title">Filters</h2>
+        <div class="filter-panel-inner">
+          <div class="filter-field">
+            <label class="field-label" for="filterType">Added by type</label>
+            <select id="filterType" class="field-input field-select">
+              <option value="">All</option>
+              <option value="customer">Customer (online)</option>
+              <option value="admin">Portal admin</option>
+              <option value="staff">Portal staff</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label class="field-label" for="filterUsername">Username contains</label>
+            <input id="filterUsername" class="field-input" type="search" placeholder="e.g. priya or admin@" autocomplete="off" />
+          </div>
+          <div class="filter-field filter-field--action">
+            <span class="field-label field-label--spacer" aria-hidden="true">.</span>
+            <button type="button" class="btn-primary" onclick="loadReports()" aria-label="Apply filters">Apply</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="bookingsReportCard" class="card">
+        <div class="card-head">
+          <h3>Bookings</h3>
+          <div class="head-actions">
+            <button type="button" class="btn-outline" onclick="exportBookingsPdf()">Save as PDF</button>
+            <button type="button" class="btn-outline" onclick="exportBookingsExcel()">Save as Excel</button>
+            <button type="button" class="btn-outline" onclick="exportBookingsDoc()">Save as Docs</button>
+            <button type="button" class="btn-outline" onclick="loadReports()">Reload</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div id="tableWrap" class="muted">Loading…</div>
+        </div>
+      </div>
+
+      <section id="stylistsFilterPanel" class="filter-panel" aria-label="Stylist report filters" style="display:none;">
+        <h2 class="filter-panel-title">Stylist filters</h2>
+        <div class="filter-panel-inner" style="grid-template-columns:minmax(130px,1fr) minmax(140px,1fr) minmax(140px,1fr) minmax(180px,1.5fr) auto;">
+          <div class="filter-field">
+            <label class="field-label" for="stylistPeriod">Period</label>
+            <select id="stylistPeriod" class="field-input field-select" onchange="toggleStylistCustomDates()">
+              <option value="day">Today</option>
+              <option value="week">This week</option>
+              <option value="month" selected>This month</option>
+              <option value="custom">Custom range</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label class="field-label" for="stylistFrom">From</label>
+            <input id="stylistFrom" class="field-input" type="date" />
+          </div>
+          <div class="filter-field">
+            <label class="field-label" for="stylistTo">To</label>
+            <input id="stylistTo" class="field-input" type="date" />
+          </div>
+          <div class="filter-field">
+            <label class="field-label" for="stylistSearch">Stylist contains</label>
+            <input id="stylistSearch" class="field-input" type="search" placeholder="e.g. jaya" autocomplete="off" />
+          </div>
+          <div class="filter-field filter-field--action">
+            <span class="field-label field-label--spacer" aria-hidden="true">.</span>
+            <button type="button" class="btn-primary" onclick="loadStylistReports()">Apply</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="stylistsSummary" class="summary-grid" style="display:none;">
+        <div class="summary-card"><p class="summary-label">Stylists</p><p class="summary-value" id="sumStylists">0</p></div>
+        <div class="summary-card"><p class="summary-label">Completed tasks</p><p class="summary-value" id="sumTasks">0</p></div>
+        <div class="summary-card"><p class="summary-label">Date range</p><p class="summary-value" id="sumRange" style="font-size:14px;font-weight:700;letter-spacing:0;">—</p></div>
+      </div>
+
+      <div id="stylistsReportCard" class="card" style="display:none;">
+        <div class="card-head">
+          <h3>Stylist report</h3>
+          <div class="head-actions">
+            <button type="button" class="btn-outline" onclick="exportStylistPdf()">Save as PDF</button>
+            <button type="button" class="btn-outline" onclick="exportStylistExcel()">Save as Excel</button>
+            <button type="button" class="btn-outline" onclick="exportStylistDoc()">Save as Docs</button>
+            <button type="button" class="btn-outline" onclick="loadStylistReports()">Reload</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div id="stylistTableWrap" class="muted">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    (function(){
+      var q = new URLSearchParams(location.search);
+      var st = q.get('setToken');
+      var ret = q.get('returnLogin');
+      if (st) {
+        localStorage.setItem('aakritiPortalToken', st);
+        if (ret) localStorage.setItem('aakritiPortalReturnLogin', ret);
+        q.delete('setToken');
+        q.delete('returnLogin');
+        var qs = q.toString();
+        history.replaceState({}, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+      }
+    })();
+    var API = '/api/aakriti/portal';
+    var reportMode = 'bookings';
+    var currentBookingRows = [];
+    var currentStylistRows = [];
+    var currentStylistRangeLabel = '';
+    function authHeaders() {
+      var t = localStorage.getItem('aakritiPortalToken');
+      return { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' };
+    }
+    function portalLogout() {
+      localStorage.removeItem('aakritiPortalToken');
+      localStorage.removeItem('aakritiPortalRole');
+      localStorage.removeItem('aakritiPortalUsername');
+      var ret = localStorage.getItem('aakritiPortalReturnLogin');
+      localStorage.removeItem('aakritiPortalReturnLogin');
+      window.location.href = ret || '/aakriti/login';
+    }
+    async function api(path, opts) {
+      var o = opts || {};
+      var h = Object.assign({}, authHeaders(), o.headers || {});
+      var res = await fetch(path, Object.assign({}, o, { headers: h }));
+      var json = await res.json().catch(function(){ return {}; });
+      if (res.status === 401) { portalLogout(); throw new Error('Session expired'); }
+      if (!res.ok) throw new Error(json.message || 'Request failed');
+      return json;
+    }
+    function applyRoleUI(role) {
+      var isAdmin = role === 'admin';
+      document.body.classList.toggle('role-admin', isAdmin);
+      document.body.classList.toggle('role-staff', !isAdmin);
+    }
+    function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function chipClass(item){
+      if (item.status === 'pending') return 'pending';
+      var m = { finished: 'finished', unreachable: 'unreachable', no_show: 'no_show', cancelled: 'cancelled' };
+      return m[item.status] || 'finished';
+    }
+    function queueDisplay(item){
+      if (item.queueLabel) return item.queueLabel;
+      if (item.status === 'pending') return item.queuePosition === 0 ? 'next' : String(item.queuePosition);
+      return item.status || '';
+    }
+    function actionCell(item){
+      var id = esc(item.id);
+      var isStaff = document.body.classList.contains('role-staff');
+      var sepBeforeDelete = isStaff ? '' : '<li class="action-dd-sep" aria-hidden="true"></li>';
+      var deleteBtn = isStaff ? '' : '<li><button type="button" class="action-dd-item danger" data-delete="1">Delete record</button></li>';
+      var opts = '';
+      if (item.status === 'pending') {
+        opts =
+          '<li><button type="button" class="action-dd-item" data-resolve="finished">Mark as complete</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="unreachable">Customer not reachable</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="no_show">No-show</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="cancelled">Cancel appointment</button></li>' +
+          sepBeforeDelete;
+      } else {
+        opts =
+          '<li><button type="button" class="action-dd-item" data-resolve="pending">Return to queue</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="finished">Mark as complete</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="unreachable">Customer not reachable</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="no_show">No-show</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="cancelled">Cancel appointment</button></li>' +
+          sepBeforeDelete;
+      }
+      return '<details class="action-dd" data-appt-id="' + id + '">' +
+        '<summary class="action-dd-sum">Actions <span aria-hidden="true">▾</span></summary>' +
+        '<ul class="action-dd-list">' + opts + deleteBtn +
+        '</ul></details>';
+    }
+    function staffDisplay(item) {
+      var all = [{ name: item.name || '', staffName: item.staffName || '', gender: item.gender || '' }];
+      if (Array.isArray(item.guests)) {
+        item.guests.forEach(function(g) {
+          all.push({ name: g.name || '', staffName: g.staffName || '', gender: g.gender || '' });
+        });
+      }
+      var served = all.filter(function(p) { return p.staffName; });
+      if (!served.length) return '<span style="color:#9ca3af;">—</span>';
+      if (all.length === 1) {
+        return '<span style="font-weight:600;">' + esc(served[0].staffName) + '</span>';
+      }
+      return served.map(function(p) {
+        var gPip = p.gender ? '<span style="display:inline-block;padding:1px 5px;border-radius:20px;font-size:10px;font-weight:700;margin-right:3px;background:' + (p.gender === 'male' ? '#dbeafe;color:#1d4ed8' : '#fce7f3;color:#be185d') + ';">' + (p.gender === 'male' ? 'M' : 'F') + '</span>' : '';
+        return '<div style="display:flex;align-items:center;gap:4px;font-size:12px;line-height:1.6;">' +
+          gPip +
+          '<span style="color:var(--muted);">' + esc(p.name || '?') + '</span>' +
+          '<span style="color:#9ca3af;margin:0 2px;">→</span>' +
+          '<span style="font-weight:700;">' + esc(p.staffName) + '</span>' +
+          '</div>';
+      }).join('');
+    }
+    function reportsUrl() {
+      var params = new URLSearchParams();
+      var ft = document.getElementById('filterType');
+      var fu = document.getElementById('filterUsername');
+      if (ft) {
+        var t = ft.value;
+        if (t) params.set('createdByType', t);
+      }
+      if (fu) {
+        var u = fu.value.trim();
+        if (u) params.set('createdByUsername', u);
+      }
+      var qs = params.toString();
+      return API + '/appointments' + (qs ? '?' + qs : '');
+    }
+    function stylistReportsUrl() {
+      var params = new URLSearchParams();
+      var period = (document.getElementById('stylistPeriod') || {}).value || 'month';
+      params.set('period', period);
+      var s = (document.getElementById('stylistSearch') || {}).value || '';
+      if (s.trim()) params.set('stylist', s.trim());
+      if (period === 'custom') {
+        var from = (document.getElementById('stylistFrom') || {}).value || '';
+        var to = (document.getElementById('stylistTo') || {}).value || '';
+        if (from) params.set('from', from);
+        if (to) params.set('to', to);
+      }
+      return API + '/reports/stylists?' + params.toString();
+    }
+    function fmtDateTime(v) {
+      if (!v) return '—';
+      var d = new Date(v);
+      if (isNaN(d.getTime())) return '—';
+      return d.toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' }) + ' ' +
+        d.toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit' });
+    }
+    function fmtYmd(v) {
+      if (!v) return '—';
+      var d = new Date(v);
+      if (isNaN(d.getTime())) return '—';
+      return d.toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' });
+    }
+    function downloadBlob(filename, type, content) {
+      var blob = new Blob([content], { type: type });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() { URL.revokeObjectURL(url); a.remove(); }, 0);
+    }
+    function csvEscape(v) {
+      var s = v == null ? '' : String(v);
+      if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    }
+    function toggleStylistCustomDates() {
+      var p = (document.getElementById('stylistPeriod') || {}).value || 'month';
+      var show = p === 'custom';
+      var from = document.getElementById('stylistFrom');
+      var to = document.getElementById('stylistTo');
+      if (from) from.disabled = !show;
+      if (to) to.disabled = !show;
+    }
+    function switchReportMode(mode) {
+      reportMode = mode === 'stylists' ? 'stylists' : 'bookings';
+      var isSty = reportMode === 'stylists';
+      document.getElementById('btnReportBookings').classList.toggle('active', !isSty);
+      document.getElementById('btnReportStylists').classList.toggle('active', isSty);
+      document.getElementById('bookingsFilterPanel').style.display = isSty ? 'none' : '';
+      document.getElementById('bookingsReportCard').style.display = isSty ? 'none' : '';
+      document.getElementById('stylistsFilterPanel').style.display = isSty ? '' : 'none';
+      document.getElementById('stylistsSummary').style.display = isSty ? 'grid' : 'none';
+      document.getElementById('stylistsReportCard').style.display = isSty ? '' : 'none';
+      if (isSty) loadStylistReports();
+      else loadReports();
+    }
+    async function loadReports() {
+      var errEl = document.getElementById('err');
+      errEl.style.display = 'none';
+      try {
+        var data = await api(reportsUrl());
+        var items = (data.data && data.data.appointments) || [];
+        var sorted = items.slice().sort(function(a, b) {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        currentBookingRows = sorted.slice();
+        var tw = document.getElementById('tableWrap');
+        if (!sorted.length) {
+          tw.innerHTML = '<div class="empty">No bookings match these filters.</div>';
+          return;
+        }
+        function gPip(gender) {
+          if (!gender) return '';
+          return '<span class="gender-pip ' + (gender === 'male' ? 'male' : 'female') + '">' + (gender === 'male' ? 'M' : 'F') + '</span>';
+        }
+        function peopleLabel(n) {
+          return Number(n || 1) === 1 ? '1 person' : Number(n) + ' people';
+        }
+        if (window.innerWidth <= 720) {
+          tw.innerHTML = '<div class="report-cards">' +
+            sorted.map(function(item) {
+              var staffHtml = staffDisplay(item);
+              var hasStaff = staffHtml.indexOf('—') === -1 || staffHtml.indexOf('font-weight:700') !== -1;
+              return '<div class="report-card" data-id="' + esc(item.id) + '">' +
+                '<div class="report-card-header">' +
+                  '<div>' +
+                    '<div class="report-card-name">' + esc(item.name || 'Guest') + ' ' + gPip(item.gender) + '</div>' +
+                    '<div class="report-card-mobile">' + esc(item.mobile || '—') + ' · ' + peopleLabel(item.peopleCount) + '</div>' +
+                  '</div>' +
+                  '<span class="chip ' + chipClass(item) + '">' + esc(queueDisplay(item)) + '</span>' +
+                '</div>' +
+                '<div class="report-card-rows">' +
+                  (hasStaff ? '<div class="report-card-row"><span class="report-card-row-label">Staff</span><span class="report-card-row-value">' + staffHtml + '</span></div>' : '') +
+                  '<div class="report-card-row"><span class="report-card-row-label">Added by</span><span class="report-card-row-value">' + esc(item.createdByDisplay || '—') + '</span></div>' +
+                '</div>' +
+                '<div class="report-card-footer">' +
+                  '<span class="report-card-time">' + new Date(item.createdAt).toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) + '</span>' +
+                  actionCell(item) +
+                '</div>' +
+              '</div>';
+            }).join('') +
+          '</div>';
+        } else {
+          // Desktop: 6 meaningful columns (name+status merged, people merged into name)
+          tw.innerHTML =
+            '<div class="table-wrap"><table class="appt-table"><thead><tr>' +
+            '<th>Customer</th><th>Mobile</th><th>Staff served</th><th>Added by</th><th>Booked at</th><th>Actions</th>' +
+            '</tr></thead><tbody>' +
+            sorted.map(function(item) {
+              var nameCell =
+                '<div class="td-name">' + esc(item.name) + ' ' + gPip(item.gender) + '</div>' +
+                '<div class="td-name-sub">' + peopleLabel(item.peopleCount) + ' · <span class="chip ' + chipClass(item) + '" style="font-size:11px;padding:2px 8px;">' + esc(queueDisplay(item)) + '</span></div>';
+              return '<tr data-id="' + esc(item.id) + '">' +
+                '<td>' + nameCell + '</td>' +
+                '<td class="td-mobile">' + esc(item.mobile) + '</td>' +
+                '<td class="td-staff">' + staffDisplay(item) + '</td>' +
+                '<td class="td-meta">' + esc(item.createdByDisplay || '—') + '</td>' +
+                '<td class="td-meta">' + new Date(item.createdAt).toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' }) + '<br><span style="color:#9ca3af;">' + new Date(item.createdAt).toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit' }) + '</span></td>' +
+                '<td class="td-actions">' + actionCell(item) + '</td>' +
+                '</tr>';
+            }).join('') +
+            '</tbody></table></div>';
+        }
+      } catch (e) {
+        errEl.textContent = e.message || 'Failed to load';
+        errEl.style.display = 'block';
+        document.getElementById('tableWrap').innerHTML = '<div class="empty">Could not load reports.</div>';
+      }
+    }
+    async function loadStylistReports() {
+      var errEl = document.getElementById('err');
+      errEl.style.display = 'none';
+      try {
+        var data = await api(stylistReportsUrl());
+        var payload = data.data || {};
+        var rows = Array.isArray(payload.stylists) ? payload.stylists : [];
+        currentStylistRows = rows.slice();
+        document.getElementById('sumStylists').textContent = String(payload.totalStylists || 0);
+        document.getElementById('sumTasks').textContent = String(payload.totalCompletedTasks || 0);
+        document.getElementById('sumRange').textContent =
+          fmtYmd(payload.range && payload.range.start) + ' - ' + fmtYmd(payload.range && payload.range.end);
+        currentStylistRangeLabel = document.getElementById('sumRange').textContent;
+        var tw = document.getElementById('stylistTableWrap');
+        if (!rows.length) {
+          tw.innerHTML = '<div class="empty">No completed stylist tasks in this period.</div>';
+          return;
+        }
+        if (window.innerWidth <= 720) {
+          tw.innerHTML = '<div class="report-cards">' + rows.map(function(r) {
+            return '<div class="report-card">' +
+              '<div class="report-card-header"><div class="report-card-name">' + esc(r.stylistName || '—') + '</div>' +
+              '<span class="chip finished">' + esc(String(r.completedCount || 0)) + ' tasks</span></div>' +
+              '<ul class="stylist-works">' +
+              (Array.isArray(r.works) ? r.works.slice(0, 12).map(function(w) {
+                var g = w.customerGender === 'male' ? '<span class="gender-pip male">M</span>' : (w.customerGender === 'female' ? '<span class="gender-pip female">F</span>' : '');
+                return '<li><span>' + g + ' ' + esc(w.customerName || 'Guest') + '</span><span>' + esc(fmtDateTime(w.completedAt)) + '</span></li>';
+              }).join('') : '') +
+              '</ul></div>';
+          }).join('') + '</div>';
+        } else {
+          tw.innerHTML =
+            '<div class="table-wrap"><table class="appt-table"><thead><tr>' +
+            '<th>Stylist</th><th>Completed tasks</th><th>Recent works</th>' +
+            '</tr></thead><tbody>' +
+            rows.map(function(r) {
+              var worksHtml = Array.isArray(r.works) && r.works.length
+                ? '<ul class="stylist-works">' + r.works.slice(0, 15).map(function(w) {
+                    var g = w.customerGender === 'male' ? '<span class="gender-pip male">M</span>' : (w.customerGender === 'female' ? '<span class="gender-pip female">F</span>' : '');
+                    var mobile = w.mobile ? ' · ' + esc(w.mobile) : '';
+                    return '<li><span>' + g + ' ' + esc(w.customerName || 'Guest') + mobile + '</span><span>' + esc(fmtDateTime(w.completedAt)) + '</span></li>';
+                  }).join('') + '</ul>'
+                : '<span style="color:#9ca3af;">—</span>';
+              return '<tr>' +
+                '<td><div class="td-name">' + esc(r.stylistName || '—') + '</div></td>' +
+                '<td><strong>' + esc(String(r.completedCount || 0)) + '</strong></td>' +
+                '<td>' + worksHtml + '</td>' +
+                '</tr>';
+            }).join('') +
+            '</tbody></table></div>';
+        }
+      } catch (e) {
+        errEl.textContent = e.message || 'Failed to load stylist report';
+        errEl.style.display = 'block';
+        document.getElementById('stylistTableWrap').innerHTML = '<div class="empty">Could not load stylist report.</div>';
+      }
+    }
+    function exportBookingsExcel() {
+      var rows = currentBookingRows || [];
+      if (!rows.length) { alert('No bookings report data to export.'); return; }
+      var lines = ['Customer,Gender,Mobile,People,Status,Queue Label,Staff Served,Added By,Booked At'];
+      rows.forEach(function(item) {
+        var served = [];
+        if (item.staffName) served.push(item.staffName);
+        if (Array.isArray(item.guests)) {
+          item.guests.forEach(function(g) { if (g && g.staffName) served.push(g.staffName); });
+        }
+        lines.push([
+          csvEscape(item.name || ''),
+          csvEscape(item.gender || ''),
+          csvEscape(item.mobile || ''),
+          csvEscape(Number(item.peopleCount || 1)),
+          csvEscape(item.status || ''),
+          csvEscape(queueDisplay(item)),
+          csvEscape(served.join(' | ')),
+          csvEscape(item.createdByDisplay || ''),
+          csvEscape(item.createdAt ? new Date(item.createdAt).toLocaleString() : '')
+        ].join(','));
+      });
+      downloadBlob('bookings_report.csv', 'text/csv;charset=utf-8', lines.join('\n'));
+    }
+    function exportBookingsDoc() {
+      var rows = currentBookingRows || [];
+      if (!rows.length) { alert('No bookings report data to export.'); return; }
+      var html = '<html><head><meta charset="utf-8"><title>Bookings Report</title></head><body><h2>Bookings Report</h2><table border="1" cellspacing="0" cellpadding="6"><tr><th>Customer</th><th>Gender</th><th>Mobile</th><th>People</th><th>Status</th><th>Queue</th><th>Added by</th><th>Booked at</th></tr>' +
+        rows.map(function(item){
+          return '<tr><td>' + esc(item.name || '') + '</td><td>' + esc(item.gender || '') + '</td><td>' + esc(item.mobile || '') + '</td><td>' + Number(item.peopleCount || 1) + '</td><td>' + esc(item.status || '') + '</td><td>' + esc(queueDisplay(item)) + '</td><td>' + esc(item.createdByDisplay || '') + '</td><td>' + esc(item.createdAt ? new Date(item.createdAt).toLocaleString() : '') + '</td></tr>';
+        }).join('') + '</table></body></html>';
+      downloadBlob('bookings_report.doc', 'application/msword', html);
+    }
+    function exportBookingsPdf() {
+      var rows = currentBookingRows || [];
+      if (!rows.length) { alert('No bookings report data to export.'); return; }
+      var win = window.open('', '_blank');
+      if (!win) { alert('Pop-up blocked. Please allow pop-ups and try again.'); return; }
+      win.document.write('<html><head><title>Bookings Report</title><style>body{font-family:Arial,sans-serif;padding:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;font-size:12px;text-align:left}th{background:#f5f5f5}</style></head><body><h2>Bookings Report</h2><table><tr><th>Customer</th><th>Gender</th><th>Mobile</th><th>People</th><th>Status</th><th>Queue</th><th>Added by</th><th>Booked at</th></tr>' +
+        rows.map(function(item){ return '<tr><td>' + esc(item.name || '') + '</td><td>' + esc(item.gender || '') + '</td><td>' + esc(item.mobile || '') + '</td><td>' + Number(item.peopleCount || 1) + '</td><td>' + esc(item.status || '') + '</td><td>' + esc(queueDisplay(item)) + '</td><td>' + esc(item.createdByDisplay || '') + '</td><td>' + esc(item.createdAt ? new Date(item.createdAt).toLocaleString() : '') + '</td></tr>'; }).join('') +
+        '</table></body></html>');
+      win.document.close();
+      win.onload = function() { win.print(); };
+    }
+    function exportStylistExcel() {
+      var rows = currentStylistRows || [];
+      if (!rows.length) { alert('No stylist report data to export.'); return; }
+      var lines = ['Stylist,Completed Tasks,Customer,Gender,Mobile,Completed At'];
+      rows.forEach(function(r) {
+        var works = Array.isArray(r.works) && r.works.length ? r.works : [{}];
+        works.forEach(function(w) {
+          lines.push([
+            csvEscape(r.stylistName || ''),
+            csvEscape(Number(r.completedCount || 0)),
+            csvEscape(w.customerName || ''),
+            csvEscape(w.customerGender || ''),
+            csvEscape(w.mobile || ''),
+            csvEscape(w.completedAt ? new Date(w.completedAt).toLocaleString() : '')
+          ].join(','));
+        });
+      });
+      downloadBlob('stylist_report.csv', 'text/csv;charset=utf-8', lines.join('\n'));
+    }
+    function exportStylistDoc() {
+      var rows = currentStylistRows || [];
+      if (!rows.length) { alert('No stylist report data to export.'); return; }
+      var html = '<html><head><meta charset="utf-8"><title>Stylist Report</title></head><body><h2>Stylist Report</h2><p>Range: ' + esc(currentStylistRangeLabel || '—') + '</p><table border="1" cellspacing="0" cellpadding="6"><tr><th>Stylist</th><th>Completed Tasks</th><th>Customer</th><th>Gender</th><th>Mobile</th><th>Completed At</th></tr>' +
+        rows.map(function(r){
+          var works = Array.isArray(r.works) && r.works.length ? r.works : [{}];
+          return works.map(function(w){
+            return '<tr><td>' + esc(r.stylistName || '') + '</td><td>' + Number(r.completedCount || 0) + '</td><td>' + esc(w.customerName || '') + '</td><td>' + esc(w.customerGender || '') + '</td><td>' + esc(w.mobile || '') + '</td><td>' + esc(w.completedAt ? new Date(w.completedAt).toLocaleString() : '') + '</td></tr>';
+          }).join('');
+        }).join('') + '</table></body></html>';
+      downloadBlob('stylist_report.doc', 'application/msword', html);
+    }
+    function exportStylistPdf() {
+      var rows = currentStylistRows || [];
+      if (!rows.length) { alert('No stylist report data to export.'); return; }
+      var win = window.open('', '_blank');
+      if (!win) { alert('Pop-up blocked. Please allow pop-ups and try again.'); return; }
+      win.document.write('<html><head><title>Stylist Report</title><style>body{font-family:Arial,sans-serif;padding:18px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;font-size:12px;text-align:left}th{background:#f5f5f5}</style></head><body><h2>Stylist Report</h2><p>Range: ' + esc(currentStylistRangeLabel || '—') + '</p><table><tr><th>Stylist</th><th>Completed Tasks</th><th>Customer</th><th>Gender</th><th>Mobile</th><th>Completed At</th></tr>' +
+        rows.map(function(r){ var works = Array.isArray(r.works) && r.works.length ? r.works : [{}]; return works.map(function(w){ return '<tr><td>' + esc(r.stylistName || '') + '</td><td>' + Number(r.completedCount || 0) + '</td><td>' + esc(w.customerName || '') + '</td><td>' + esc(w.customerGender || '') + '</td><td>' + esc(w.mobile || '') + '</td><td>' + esc(w.completedAt ? new Date(w.completedAt).toLocaleString() : '') + '</td></tr>'; }).join(''); }).join('') +
+        '</table></body></html>');
+      win.document.close();
+      win.onload = function() { win.print(); };
+    }
+    async function resolveAppointment(id, status){
+      await api(API + '/appointments/' + encodeURIComponent(id) + '/resolve', {
+        method: 'POST',
+        body: JSON.stringify({ status: status })
+      });
+      await loadReports();
+    }
+    async function deleteAppointment(id){
+      if (!confirm('Permanently delete this booking record?')) return;
+      await api(API + '/appointments/' + encodeURIComponent(id), { method: 'DELETE' });
+      await loadReports();
+    }
+    document.addEventListener('click', function(ev){
+      document.querySelectorAll('.action-dd[open]').forEach(function(el){
+        if (!el.contains(ev.target)) el.open = false;
+      });
+    });
+    function openSideMenu() {
+      document.getElementById('sideMenu').classList.add('is-open');
+      document.getElementById('sideMenuBackdrop').classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSideMenu() {
+      document.getElementById('sideMenu').classList.remove('is-open');
+      document.getElementById('sideMenuBackdrop').classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('btnOpenSideMenu').addEventListener('click', openSideMenu);
+    document.getElementById('sideMenuBackdrop').addEventListener('click', closeSideMenu);
+    document.getElementById('sideMenu').addEventListener('click', function(ev) {
+      var navTarget = ev.target.closest('a.nav-item, button.nav-item');
+      if (!navTarget) return;
+      if (navTarget.id === 'sideMenuLogout') { closeSideMenu(); portalLogout(); return; }
+      closeSideMenu();
+    });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSideMenu(); });
+    var resizeTimer = null;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() {
+        if (reportMode === 'stylists') loadStylistReports().catch(function(){});
+        else loadReports().catch(function(){});
+      }, 200);
+    });
+    async function boot() {
+      var t = localStorage.getItem('aakritiPortalToken');
+      if (!t) {
+        window.location.href = localStorage.getItem('aakritiPortalReturnLogin') || '/aakriti/login';
+        return;
+      }
+      var r = await fetch(API + '/me', { headers: authHeaders() });
+      var j = await r.json().catch(function(){ return {}; });
+      if (!r.ok || j.status !== 'success') { portalLogout(); return; }
+      applyRoleUI(j.data.role);
+      var su = document.getElementById('sidebarUser');
+      if (su) su.textContent = j.data.username || (j.data.role === 'admin' ? 'Admin' : 'Staff');
+      toggleStylistCustomDates();
+      await loadReports();
+      document.getElementById('tableWrap').addEventListener('click', function(ev){
+        var r = ev.target.closest('button[data-resolve]');
+        if (r) {
+          ev.preventDefault();
+          var dd = r.closest('details.action-dd');
+          if (dd) dd.open = false;
+          var id = dd && dd.getAttribute('data-appt-id');
+          if (id) resolveAppointment(id, r.getAttribute('data-resolve'));
+          return;
+        }
+        var d = ev.target.closest('button[data-delete]');
+        if (d) {
+          var dd2 = d.closest('details.action-dd');
+          if (dd2) dd2.open = false;
+          var id2 = dd2 && dd2.getAttribute('data-appt-id');
+          if (id2) deleteAppointment(id2);
+        }
+      });
+      var rt = null;
+      if (typeof io !== 'undefined') {
+        var sock = io({ path: '/socket.io', transports: ['websocket', 'polling'] });
+        sock.on('connect', function(){ sock.emit('join_aakriti_watch'); });
+        sock.on('aakriti_changed', function(){
+          clearTimeout(rt);
+          rt = setTimeout(function(){ loadReports().catch(function(){}); }, 200);
+        });
+      }
+    }
+    boot();
+  </script>
+</body>
+</html>

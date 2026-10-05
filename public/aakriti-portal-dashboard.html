@@ -1,0 +1,3282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aakriti — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" crossorigin="anonymous" />
+  <style>
+    :root {
+      --nav: #23292c;
+      --bg-top: #f5f5f5;
+      --bg-bottom: #ebebeb;
+      --panel: #ffffff;
+      --border: #e8e8ea;
+      --input-border: #d4d4d4;
+      --text: #0a0a0a;
+      --muted: #6b7280;
+      --primary: #23292c;
+      --primary-hover: #1a1f22;
+      --accent-ring: rgba(35, 41, 44, 0.22);
+      --ui-blue: #2563eb;
+      --ui-blue-hover: #1d4ed8;
+      --ui-blue-soft: #eff6ff;
+      --chip-pending-bg: #eef0f1;
+      --chip-pending-text: #23292c;
+      --chip-finished-bg: #e8e8e8;
+      --chip-finished-text: #404040;
+      --chip-warn-bg: #ebebeb;
+      --chip-warn-text: #525252;
+      --chip-bad-bg: #e0e0e0;
+      --chip-bad-text: #262626;
+      --chip-neutral-bg: #f5f5f5;
+      --chip-neutral-text: #737373;
+      --country-bg: linear-gradient(180deg, #fafafa 0%, #f0f0f0 100%);
+      --sidebar-w: 248px;
+    }
+    * { box-sizing: border-box; }
+    html { height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      font-family: "DM Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: #f0f2f5;
+    }
+    body.role-staff .admin-only { display: none !important; }
+    body.role-admin .staff-only { display: none !important; }
+
+    /* ——— Top bar (colors unchanged) ——— */
+    .topbar {
+      min-height: 72px;
+      height: auto;
+      padding: 12px 22px;
+      background: var(--nav);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+    .brand-logo-link {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      line-height: 0;
+      text-decoration: none;
+    }
+    .brand-logo-img {
+      height: 56px;
+      width: auto;
+      max-width: min(360px, 65vw);
+      display: block;
+      object-fit: contain;
+      object-position: left center;
+    }
+    .topbar-left,
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .topbar-right { flex-shrink: 0; margin-left: auto; }
+    .mobile-menu-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      background: transparent;
+      border-radius: 10px;
+      color: #f5f5f4;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .mobile-menu-btn:hover { background: rgba(255, 255, 255, 0.08); }
+    .top-link {
+      text-decoration: none;
+      color: #f5f5f4;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
+      padding: 8px 14px;
+      background: transparent;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+    .top-link:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    /* ——— App shell ——— */
+    .app-wrap {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      min-height: 0;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 20px 14px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sidebar-brand {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 4px 10px 12px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover { background: #f3f4f6; color: var(--text); }
+    .nav-item.active {
+      background: var(--ui-blue-soft);
+      color: var(--ui-blue);
+    }
+    button.nav-item {
+      width: 100%;
+      font-family: inherit;
+    }
+    .nav-item .ni { font-size: 16px; width: 22px; text-align: center; opacity: 0.9; }
+    .nav-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9ca3af; padding: 16px 10px 6px; }
+    .nav-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      min-width: 22px;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 800;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item.gender-filter-active { background: #eff6ff; color: #2563eb; }
+    .nav-item.gender-filter-active .nav-badge { background: rgba(37,99,235,0.2); color: #1d4ed8; }
+    /* Gender-filtered person-level queue table */
+    .pq-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .pq-table th { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: #fafbfc; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    .pq-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .pq-table tr:hover td { background: rgba(37,99,235,0.03); }
+    .pq-chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 800; letter-spacing: 0.02em; }
+    .pq-chip.gents { background: #dbeafe; color: #1d4ed8; }
+    .pq-chip.ladies { background: #fce7f3; color: #be185d; }
+    .pq-chip.is-next { animation: pulse-next 1.8s ease-in-out infinite; }
+    @keyframes pulse-next { 0%,100%{opacity:1} 50%{opacity:.65} }
+    .pq-booking-ref { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .pq-filter-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .pq-filter-title { font-size: 14px; font-weight: 700; }
+    .pq-filter-clear { border: none; background: none; font: inherit; font-size: 13px; color: var(--muted); cursor: pointer; margin-left: auto; padding: 4px 8px; border-radius: 8px; }
+    .pq-filter-clear:hover { background: #f3f4f6; color: var(--text); }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 10px 4px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .sidebar-footer strong { display: block; color: var(--text); font-size: 13px; font-weight: 700; margin-top: 4px; word-break: break-word; }
+    .mobile-only { display: none !important; }
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 90;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .app-main {
+      flex: 1;
+      min-width: 0;
+      padding: 22px 20px 36px;
+      overflow-x: hidden;
+    }
+    @media (min-width: 901px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 72px;
+        width: var(--sidebar-w);
+        height: calc(100vh - 72px);
+        min-height: calc(100vh - 72px);
+        overflow-y: auto;
+        z-index: 25;
+        box-shadow: 1px 0 0 var(--border);
+        justify-content: flex-start;
+      }
+      .app-main {
+        margin-left: var(--sidebar-w);
+      }
+    }
+    .main-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .main-head h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.5rem, 4vw, 1.85rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .main-head p {
+      margin: 0;
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 36rem;
+      line-height: 1.5;
+    }
+    .main-head-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn-blue {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--ui-blue);
+      color: #fff !important;
+      border: 1px solid var(--ui-blue);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-blue:hover { background: var(--ui-blue-hover); border-color: var(--ui-blue-hover); }
+
+    /* Stat cards */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, var(--stat-bar, var(--ui-blue)), #93c5fd);
+      opacity: 0.85;
+    }
+    .stat-card:nth-child(1) { --stat-bar: #2563eb; }
+    .stat-card:nth-child(2) { --stat-bar: #7c3aed; }
+    .stat-card:nth-child(3) { --stat-bar: #ea580c; }
+    .stat-card:nth-child(4) { --stat-bar: #059669; }
+    .stat-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: var(--ui-blue-soft);
+    }
+    .stat-card:nth-child(2) .stat-icon { background: #f3e8ff; }
+    .stat-card:nth-child(3) .stat-icon { background: #ffedd5; }
+    .stat-card:nth-child(4) .stat-icon { background: #d1fae5; }
+    .stat-trend { font-size: 12px; color: #10b981; font-weight: 700; }
+    .stat-card .k {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .stat-card .v {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    /* Charts (admin) */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 18px;
+      margin-bottom: 20px;
+      align-items: stretch;
+    }
+    .chart-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 8px 24px rgba(15, 23, 42, 0.06);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .chart-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+    }
+    .chart-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+      border: 1px solid #bfdbfe;
+    }
+    .chart-card--donut .chart-card-icon {
+      background: linear-gradient(145deg, #f5f3ff 0%, #ede9fe 100%);
+      border-color: #ddd6fe;
+    }
+    .chart-card-titles { min-width: 0; }
+    .chart-card-titles h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+    }
+    .chart-card-titles .sub {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #64748b;
+    }
+    .chart-card-body {
+      padding: 18px 20px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .chart-card-body--bars {
+      padding-top: 12px;
+    }
+
+    /* Bar chart */
+    .bar-chart-root {
+      width: 100%;
+    }
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+    }
+    .bar-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .bar-val {
+      font-size: 12px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: #0f172a;
+      min-height: 18px;
+      line-height: 1;
+    }
+    .bar-track {
+      width: 100%;
+      max-width: 52px;
+      height: 152px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 6px 5px 0;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0;
+      box-sizing: border-box;
+    }
+    .bar-chart .bar {
+      width: 100%;
+      border-radius: 8px 8px 6px 6px;
+      background: linear-gradient(180deg, #60a5fa 0%, #2563eb 55%, #1d4ed8 100%);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.22);
+      transition: height 0.35s ease;
+      min-height: 4px;
+    }
+    .bar-x {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    /* Donut */
+    .chart-card-body--donut {
+      padding-top: 8px;
+    }
+    .donut-wrap {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 20px 24px;
+      align-items: center;
+    }
+    @media (max-width: 520px) {
+      .donut-wrap {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+      .donut-legend-list { width: 100%; max-width: 280px; }
+    }
+    .donut {
+      width: 148px;
+      height: 148px;
+      border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    }
+    .donut-inner {
+      position: absolute;
+      inset: 30px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px #f1f5f9;
+    }
+    .donut-inner strong {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+    }
+    .donut-legend-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .donut-legend-list li {
+      display: grid;
+      grid-template-columns: 10px 1fr auto auto;
+      gap: 10px 12px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+    }
+    .dl-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .dl-label {
+      font-weight: 600;
+      color: #334155;
+      min-width: 0;
+    }
+    .dl-val {
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: #0f172a;
+    }
+    .dl-pct {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+    }
+    .donut-legend-wrap {
+      min-width: 0;
+      width: 100%;
+      align-self: stretch;
+    }
+    .chart-empty {
+      padding: 28px 16px;
+      text-align: center;
+      font-size: 14px;
+      color: #64748b;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px dashed #e2e8f0;
+      line-height: 1.5;
+    }
+
+    /* Staff highlight */
+    .staff-panel {
+      background: linear-gradient(135deg, #eff6ff 0%, #fff 50%);
+      border: 1px solid #bfdbfe;
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .staff-panel h3 { margin: 0 0 4px; font-size: 17px; font-weight: 700; }
+    .staff-panel p { margin: 0; font-size: 14px; color: var(--muted); max-width: 520px; line-height: 1.45; }
+    .staff-badge {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ui-blue);
+      background: #fff;
+      padding: 8px 14px;
+      border-radius: 99px;
+      border: 1px solid #93c5fd;
+    }
+
+    /* Booking + queue (stacked: booking on top, queue below) */
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: stretch;
+      min-height: 0;
+    }
+    .layout > * { min-width: 0; width: 100%; }
+    /* One grid: col1 = name + notes (same width), col2 = mobile + people/actions (same width) */
+    .req-star { color: #e53e3e; margin-left: 2px; }
+    .field-error { border-color: #e53e3e !important; box-shadow: 0 0 0 3px rgba(229,62,62,.15) !important; }
+    .form-err {
+      display: none;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .form-booking {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 520px) {
+      .form-row-2 { grid-template-columns: 1fr; }
+    }
+    .field-notes-tall {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: 100%;
+    }
+    .field-notes-tall textarea {
+      flex: 1;
+      min-height: 148px;
+      width: 100%;
+    }
+    .form-booking-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .form-booking-actions .btn { flex: 1; min-width: 0; background: #111; border-color: #111; }
+    .form-booking-actions .btn:hover { background: #000; border-color: #000; }
+    .form-booking-actions .btn-modal-secondary { flex: 0 1 auto; min-width: 0; }
+    .btn-modal-secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--input-border);
+      font-weight: 600;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 15px;
+    }
+    .btn-modal-secondary:hover { border-color: var(--muted); background: #f9fafb; }
+
+    /* Booking modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(15, 23, 42, 0.48);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+    }
+    .modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-panel {
+      width: 100%;
+      max-width: 620px;
+      max-height: min(92vh, 760px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, #fafbfc 0%, #fff 12%);
+      border-radius: 20px;
+      box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.28),
+        0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+      border: 1px solid var(--border);
+      transform: scale(0.96) translateY(12px);
+      transition: transform 0.26s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+    .modal-backdrop.is-open .modal-panel {
+      transform: scale(1) translateY(0);
+    }
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #fff 0%, #fafbfc 100%);
+    }
+    .modal-head h2 {
+      margin: 0 0 6px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .modal-sub {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .modal-close {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 12px;
+      background: #f3f4f6;
+      color: var(--text);
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .modal-close:hover { background: #e5e7eb; color: #111; }
+    .modal-body {
+      padding: 20px 22px 24px;
+      overflow-y: auto;
+    }
+    /* Staff selection modal */
+    .modal-panel-sm {
+      max-width: 440px;
+      max-height: min(92vh, 600px);
+    }
+    /* ── Booking & Time Settings modal ── */
+    .settings-stack { display: flex; flex-direction: column; }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row.col { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .settings-row-label { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .settings-row-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .settings-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 36px 10px 13px;
+      font: inherit;
+      font-size: 14px;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23737373' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 13px center;
+      appearance: none; -webkit-appearance: none;
+      color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .settings-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.15); }
+    .settings-actions { display: flex; align-items: center; gap: 14px; padding-top: 18px; }
+    .settings-saved-msg { font-size: 13px; font-weight: 600; color: #16a34a; display: none; }
+    .toggle-wrap { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .toggle-lbl { font-size: 12px; font-weight: 700; color: var(--muted); min-width: 22px; text-align: right; }
+    .toggle-switch { position: relative; display: inline-block; width: 46px; height: 26px; cursor: pointer; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track { position: absolute; inset: 0; background: #d1d5db; border-radius: 99px; transition: background .2s; }
+    .toggle-switch input:checked + .toggle-track { background: #16a34a; }
+    .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; box-shadow: 0 1px 4px rgba(0,0,0,.18); transition: transform .2s; }
+    .toggle-switch input:checked + .toggle-track .toggle-thumb { transform: translateX(20px); }
+    .booking-status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+    .booking-status-pill.open { background: #dcfce7; color: #15803d; }
+    .booking-status-pill.closed { background: #fee2e2; color: #991b1b; }
+    .closed-msg-row { display: none; }
+    .closed-msg-row.visible { display: flex; }
+    .staff-modal-person-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+    }
+    .staff-modal-person-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .staff-modal-person-avatar.male { background: #dbeafe; color: #1d4ed8; }
+    .staff-modal-person-avatar.female { background: #fce7f3; color: #be185d; }
+    .staff-modal-person-avatar.neutral { background: #f3f4f6; color: var(--muted); }
+    .staff-modal-person-info { min-width: 0; }
+    .staff-modal-person-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 2px;
+    }
+    .staff-modal-person-meta {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .staff-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin: 0 0 10px;
+    }
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .staff-btn {
+      position: relative;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 14px 8px 10px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .staff-btn-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--muted);
+      transition: background 0.15s;
+    }
+    img.staff-btn-avatar,
+    video.staff-btn-avatar {
+      object-fit: cover;
+      overflow: hidden;
+    }
+    .staff-btn-check {
+      display: none;
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 12px;
+      color: #fff;
+    }
+    .staff-btn:hover { border-color: var(--primary); box-shadow: 0 0 0 3px var(--accent-ring); }
+    .staff-btn.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(35,41,44,0.22);
+    }
+    .staff-btn.selected .staff-btn-avatar { background: rgba(255,255,255,0.18); color: #fff; }
+    .staff-btn.selected .staff-btn-check { display: block; }
+    /* Person sub-rows */
+    .person-row td {
+      background: #f9fafb;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 7px 8px;
+    }
+    .person-row td:first-child { padding-left: 24px; }
+    .person-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .person-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .gender-pip {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+      letter-spacing: 0.04em;
+    }
+    .gender-pip.male { background: #dbeafe; color: #1d4ed8; }
+    .gender-pip.female { background: #fce7f3; color: #be185d; }
+    .staff-done-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: #15803d;
+      background: #dcfce7;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+    .btn-person-done {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+      background: #fff;
+      cursor: pointer;
+      color: var(--text);
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-person-done:hover { border-color: var(--primary); color: var(--primary); }
+    /* Inline name + gender composite */
+    .name-gender-row {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .name-gender-row:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--accent-ring);
+    }
+    .name-gender-row input {
+      flex: 1;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      min-width: 0;
+      padding: 12px 14px;
+      font-size: 15px;
+      background: transparent;
+    }
+    .name-gender-row input:focus { box-shadow: none; border-color: transparent; outline: none; }
+    .gender-mini-wrap {
+      display: flex;
+      gap: 4px;
+      padding: 5px 6px;
+      border-left: 1px solid var(--input-border);
+      flex-shrink: 0;
+    }
+    .gender-mini-btn {
+      padding: 5px 12px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .gender-mini-btn.active { background: var(--primary); color: #fff; }
+    .gender-mini-btn:hover:not(.active) { background: #f3f4f6; color: var(--text); }
+    .booking-stylist-select {
+      width: 100%;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 11px 12px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .booking-stylist-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--accent-ring);
+    }
+    .booking-stylist-hint {
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .queue-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-height: 0;
+      min-height: min(55vh, 520px);
+    }
+    .card.queue-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .queue-card-body {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    #tableWrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 12rem;
+    }
+    #tableWrap > .table-wrap { flex: 1; min-height: 0; }
+    #tableWrap > .empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 12rem;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+    }
+    .card-head {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
+    }
+    .card-head h3 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+    .queue-head-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .queue-date-input {
+      width: 164px;
+      min-width: 150px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      font-size: 13px;
+      background: #fff;
+    }
+    .queue-date-input:focus {
+      outline: none;
+      border-color: var(--ui-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .date-modern {
+      background: #fff;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-height: 44px;
+      font-size: 14px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .date-modern:focus {
+      outline: none;
+      border-color: var(--ui-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .queue-date-input.date-modern {
+      width: 170px;
+      min-width: 156px;
+    }
+    .flatpickr-calendar {
+      width: min(360px, calc(100vw - 32px)) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 14px 50px rgba(15, 23, 42, 0.2) !important;
+      font-family: "DM Sans", system-ui, sans-serif !important;
+      border: 1px solid #e5e7eb !important;
+    }
+    .flatpickr-months {
+      position: relative;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      min-height: 58px;
+      padding: 12px 12px 16px;
+      box-sizing: border-box;
+    }
+    .flatpickr-months .flatpickr-month {
+      flex: 1;
+      min-height: 52px;
+      height: auto !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      padding: 0 52px;
+      box-sizing: border-box;
+    }
+    .flatpickr-months .flatpickr-prev-month,
+    .flatpickr-months .flatpickr-next-month {
+      position: absolute !important;
+      top: 50% !important;
+      transform: translateY(-50%) !important;
+      height: 42px !important;
+      width: 42px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      z-index: 5;
+      box-sizing: border-box;
+    }
+    .flatpickr-months .flatpickr-prev-month.flatpickr-prev-month {
+      left: 8px !important;
+    }
+    .flatpickr-months .flatpickr-next-month.flatpickr-next-month {
+      right: 8px !important;
+    }
+    .flatpickr-months .flatpickr-prev-month svg,
+    .flatpickr-months .flatpickr-next-month svg {
+      width: 18px !important;
+      height: 18px !important;
+    }
+    .flatpickr-current-month {
+      position: static !important;
+      left: auto !important;
+      width: 100% !important;
+      max-width: 100%;
+      height: auto !important;
+      min-height: 0 !important;
+      padding: 6px 4px !important;
+      margin: 0 !important;
+      transform: none !important;
+      display: flex !important;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px 10px;
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      color: var(--text) !important;
+      line-height: 1.35 !important;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .flatpickr-current-month .flatpickr-month {
+      color: inherit;
+    }
+    .flatpickr-current-month span.cur-month {
+      margin-left: 0 !important;
+      padding: 2px 4px !important;
+    }
+    .flatpickr-current-month .numInputWrapper {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #f9fafb;
+      padding: 2px 4px;
+      width: 4.25rem;
+      vertical-align: middle;
+    }
+    .flatpickr-current-month .numInputWrapper:hover {
+      border-color: #d1d5db;
+      background: #f3f4f6;
+    }
+    .flatpickr-current-month input.cur-year {
+      font-weight: 700 !important;
+      font-size: 16px !important;
+      color: var(--text) !important;
+      padding: 4px 6px !important;
+    }
+    .flatpickr-current-month .arrowUp,
+    .flatpickr-current-month .arrowDown {
+      border: none;
+      width: 0.75rem;
+    }
+    .flatpickr-innerContainer {
+      padding: 0 8px 12px;
+      box-sizing: border-box;
+    }
+    .flatpickr-rContainer {
+      width: 100%;
+    }
+    .flatpickr-weekdays {
+      padding: 14px 2px 12px !important;
+      margin: 0 !important;
+      border-top: 1px solid #eef0f3;
+      box-sizing: border-box;
+    }
+    .flatpickr-weekdaycontainer {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      gap: 2px;
+    }
+    .flatpickr-weekday {
+      flex: 1;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #64748b;
+      padding: 0 2px 2px;
+      line-height: 1.3;
+    }
+    .flatpickr-days {
+      width: 100%;
+    }
+    .flatpickr-days .dayContainer {
+      width: 100%;
+      min-width: 100%;
+      padding: 4px 0 0;
+      box-sizing: border-box;
+    }
+    .flatpickr-day {
+      border-radius: 10px;
+      font-weight: 600;
+      line-height: 44px;
+      max-width: 44px;
+      height: 44px;
+      margin: 2px;
+      font-size: 15px;
+    }
+    .flatpickr-day.today {
+      border-color: #2a3136;
+      color: #2a3136;
+    }
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+      background: linear-gradient(180deg, #2a3136 0%, #1e2428 100%) !important;
+      border-color: #2a3136 !important;
+      color: #fff !important;
+      box-shadow: none !important;
+    }
+    .flatpickr-day:hover:not(.selected):not(.flatpickr-disabled) {
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+    }
+    .flatpickr-months .flatpickr-prev-month:hover,
+    .flatpickr-months .flatpickr-next-month:hover {
+      background: rgba(42, 49, 54, 0.07);
+    }
+    .flatpickr-months .flatpickr-prev-month:hover svg,
+    .flatpickr-months .flatpickr-next-month:hover svg {
+      fill: #2a3136;
+    }
+    .card-body { padding: 18px; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .form-stack { display: flex; flex-direction: column; gap: 16px; }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    input, textarea, button {
+      width: 100%;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      padding: 11px 13px;
+      font: inherit;
+      font-size: 15px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--ui-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    textarea { min-height: 0; resize: vertical; }
+    textarea#notes { min-height: 0; }
+    #preferredDate { width: 100%; }
+    .phone-composite {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .phone-composite:focus-within {
+      border-color: var(--ui-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .country-select-wrap {
+      position: relative;
+      flex: 0 0 auto;
+      min-width: 118px;
+      max-width: 136px;
+      background: var(--country-bg);
+      border-right: 1px solid var(--border);
+    }
+    .country-select-wrap::after {
+      content: "";
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      width: 0;
+      height: 0;
+      margin-top: -2px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--muted);
+      pointer-events: none;
+      opacity: 0.75;
+    }
+    .country-select-wrap select {
+      width: 100%;
+      height: 100%;
+      min-height: 44px;
+      margin: 0;
+      padding: 10px 26px 10px 10px;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .phone-composite input#mobile {
+      width: auto;
+      flex: 1;
+      min-width: 0;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .gender-toggle {
+      display: flex;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      width: 100%;
+      height: 46px;
+    }
+    .gender-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      padding: 0;
+    }
+    .gender-btn:first-child { border-right: 1px solid var(--input-border); }
+    .gender-btn.active { background: var(--primary); color: #fff; }
+    .gender-btn:hover:not(.active) { background: #f3f4f6; color: var(--text); }
+    .guest-block {
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .guest-block-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+    #guestsSection { display: flex; flex-direction: column; gap: 14px; }
+    .person-stylist-field { margin-top: 10px; }
+    .people-stepper {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      max-width: 200px;
+      height: 46px;
+    }
+    .people-step-btn {
+      width: 46px;
+      flex-shrink: 0;
+      border: none;
+      background: #f3f4f6;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .people-step-btn:hover:not(:disabled) { background: #e5e7eb; }
+    .people-step-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .people-step-value {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+      min-width: 40px;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    .btn {
+      cursor: pointer;
+      background: var(--ui-blue);
+      border-color: var(--ui-blue);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 18px;
+      border-radius: 12px;
+    }
+    .btn:hover { background: var(--ui-blue-hover); border-color: var(--ui-blue-hover); }
+    .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25); }
+    .btn-lite {
+      background: #fff;
+      color: var(--text);
+      border-color: var(--input-border);
+      font-weight: 600;
+    }
+    .btn-lite:hover { border-color: var(--ui-blue); color: var(--ui-blue); }
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+      max-width: 100%;
+    }
+    table.appt-table {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 13px;
+    }
+    .appt-table col.c-q { width: 13%; }
+    .appt-table col.c-name { width: 14%; }
+    .appt-table col.c-mobile { width: 13%; }
+    .appt-table col.c-people { width: 9%; }
+    .appt-table col.c-notes { width: 14%; }
+    .appt-table col.c-pref { width: 9%; }
+    .appt-table col.c-added { width: 11%; }
+    .appt-table col.c-booked { width: 11%; }
+    .appt-table col.c-actions { width: 13%; }
+    .appt-table th:first-child,
+    .appt-table td:first-child {
+      min-width: 8.75rem;
+      width: 13%;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th, td { border-bottom: 1px solid var(--border); text-align: left; padding: 10px 8px; vertical-align: middle; }
+    .appt-table th,
+    .appt-table td {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .appt-table td.td-booked {
+      white-space: normal;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    .appt-table td .td-pref {
+      white-space: nowrap;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .appt-table td:nth-child(4) { white-space: nowrap; }
+    .appt-table td:first-child .chip {
+      max-width: 100%;
+      white-space: normal;
+      text-align: center;
+      line-height: 1.25;
+    }
+    .appt-table td:last-child { white-space: nowrap; overflow: visible; }
+    tbody tr:hover { background: rgba(37, 99, 235, 0.04); }
+    th { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+    .chip {
+      border-radius: 99px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-block;
+      text-transform: lowercase;
+    }
+    .chip.pending { background: var(--chip-pending-bg); color: var(--chip-pending-text); }
+    .chip.pending.gents { background: #dbeafe; color: #1d4ed8; }
+    .chip.pending.ladies { background: #fce7f3; color: #be185d; }
+    .chip.finished { background: var(--chip-finished-bg); color: var(--chip-finished-text); }
+    .chip.unreachable { background: var(--chip-warn-bg); color: var(--chip-warn-text); }
+    .chip.no_show { background: var(--chip-bad-bg); color: var(--chip-bad-text); }
+    .chip.cancelled { background: var(--chip-neutral-bg); color: var(--chip-neutral-text); }
+    .td-text { font-size: 13px; line-height: 1.35; }
+    .td-num { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .action-dd { position: relative; z-index: 1; }
+    .action-dd[open] { z-index: 30; }
+    .action-dd-sum {
+      list-style: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      background: #fff;
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      user-select: none;
+    }
+    .action-dd-sum:hover { border-color: var(--ui-blue); color: var(--ui-blue); }
+    .action-dd-sum::-webkit-details-marker { display: none; }
+    .action-dd-list {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      margin: 0;
+      padding: 6px;
+      list-style: none;
+      min-width: 220px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(10, 10, 10, 0.12);
+    }
+    .action-dd-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      margin: 0;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .action-dd-item:hover { background: rgba(37, 99, 235, 0.08); }
+    .action-dd-item.danger { color: #262626; font-weight: 600; }
+    .action-dd-item.danger:hover { background: rgba(10, 10, 10, 0.06); }
+    .action-dd-sep {
+      height: 1px;
+      margin: 6px 8px;
+      background: var(--border);
+      list-style: none;
+    }
+    .mini-btn { width: auto; padding: 7px 10px; font-size: 12px; border-radius: 8px; }
+    .empty { padding: 32px 20px; text-align: center; color: var(--muted); font-size: 15px; margin: 0; }
+    .queue-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 4px 2px;
+    }
+    .queue-card-item {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+    .queue-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .queue-card-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.25;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .queue-card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 10px;
+      margin-bottom: 10px;
+    }
+    .queue-card-field {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 8px 9px;
+    }
+    .queue-card-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+    .queue-card-value {
+      display: block;
+      font-size: 13px;
+      line-height: 1.35;
+      color: var(--text);
+      overflow-wrap: anywhere;
+    }
+    .queue-card-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    @media (max-width: 1100px) {
+      .charts-row { grid-template-columns: 1fr; }
+      .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 900px) {
+      .mobile-menu-btn { display: inline-flex; }
+      .topbar-right { display: none; }
+      .app-wrap { flex-direction: column; }
+      .sidebar-backdrop {
+        display: block;
+      }
+      .sidebar-backdrop.is-open {
+        opacity: 1;
+        visibility: visible;
+      }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: min(320px, 88vw);
+        height: 100dvh;
+        z-index: 100;
+        border-right: 1px solid var(--border);
+        border-bottom: none;
+        box-shadow: 10px 0 30px rgba(15, 23, 42, 0.14);
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+        padding: 14px 12px 16px;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .sidebar.is-open {
+        transform: translateX(0);
+      }
+      .sidebar-brand,
+      .nav-label,
+      .sidebar-footer {
+        display: block;
+      }
+      .sidebar-brand { width: 100%; padding-bottom: 10px; }
+      .nav-label { width: 100%; padding-top: 12px; }
+      .nav-item {
+        width: 100%;
+        min-width: 0;
+        justify-content: flex-start;
+        white-space: normal;
+      }
+      .mobile-only {
+        display: flex !important;
+      }
+      .app-main { padding: 18px 14px 30px; }
+      .main-head { gap: 12px; margin-bottom: 16px; }
+      .main-head-actions { width: 100%; }
+      .main-head-actions .btn-blue { width: 100%; justify-content: center; }
+      .queue-head-tools {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .queue-date-input.date-modern {
+        width: 100%;
+        min-width: 0;
+      }
+      .card-head {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+    }
+    @media (max-width: 680px) {
+      .stat-grid { grid-template-columns: 1fr; }
+      .topbar {
+        padding: 10px 14px;
+        gap: 10px;
+      }
+      .brand-logo-img {
+        height: 44px;
+        max-width: min(250px, 62vw);
+      }
+      .topbar-right .top-link {
+      padding: 7px 10px;
+      font-size: 12px;
+      }
+      .app-main { padding: 14px 10px 24px; }
+      .country-select-wrap { min-width: 100px; max-width: 120px; }
+      .queue-head-tools .btn-lite.mini-btn {
+        flex: 1 1 calc(50% - 6px);
+        min-width: 0;
+      }
+      .queue-head-tools .queue-date-input.date-modern {
+        flex: 1 1 100%;
+      }
+      .card-body { padding: 14px; }
+      .queue-card-grid { grid-template-columns: 1fr; }
+      .queue-card-actions .action-dd,
+      .queue-card-actions .action-dd-sum { width: 100%; }
+      .queue-card-actions .action-dd-sum { justify-content: center; }
+      .modal-backdrop { padding: 10px; }
+      .modal-panel {
+        max-height: 94vh;
+        border-radius: 14px;
+      }
+      .modal-head,
+      .modal-body {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+    .today-bookings-page #statsSection,
+    .today-bookings-page #chartsSection,
+    .today-bookings-page #staffPanel {
+      display: none !important;
+    }
+    .today-bookings-page .layout {
+      grid-template-columns: 1fr;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="mobile-menu-btn" id="btnOpenSideMenu" aria-label="Open menu">☰</button>
+      <a class="brand-logo-link" href="/aakriti/dashboard" aria-label="Aakriti">
+      <img class="brand-logo-img" src="/aakriti-logo.png" alt="Aakriti Boutique &amp; Makeup Studio" />
+    </a>
+    </div>
+    <div class="topbar-right">
+      <button type="button" class="top-link" style="cursor:pointer;font:inherit;" onclick="portalLogout()">Log out</button>
+    </div>
+  </header>
+  <div class="sidebar-backdrop" id="sideMenuBackdrop" aria-hidden="true"></div>
+
+  <div class="app-wrap">
+    <aside class="sidebar" id="sideMenu" aria-label="Main navigation">
+      <div class="sidebar-brand">Salon</div>
+      <a class="nav-item active" id="navDashboardLink" href="/aakriti/dashboard"><span class="ni" aria-hidden="true">▣</span> Dashboard</a>
+      <a class="nav-item" id="navTodayBookingsLink" href="/aakriti/dashboard/today-bookings"><span class="ni" aria-hidden="true">☰</span> Today bookings</a>
+      <button type="button" class="nav-item" id="navNewBooking"><span class="ni" aria-hidden="true">＋</span> New booking</button>
+      <div class="nav-label">Insights</div>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/analytics"><span class="ni" aria-hidden="true">▤</span> Month analytics</a>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/customers"><span class="ni" aria-hidden="true">◎</span> Customers</a>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/reports"><span class="ni" aria-hidden="true">▦</span> Reports</a>
+      <div class="nav-label">Queue filters</div>
+      <button type="button" class="nav-item" id="navGentsFilter">
+        <span class="ni" aria-hidden="true">♂</span> Gents
+        <span class="nav-badge" id="gentsCount"></span>
+      </button>
+      <button type="button" class="nav-item" id="navLadiesFilter">
+        <span class="ni" aria-hidden="true">♀</span> Ladies
+        <span class="nav-badge" id="ladiesCount"></span>
+      </button>
+      <div class="nav-label admin-only">Management</div>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/stylists"><span class="ni" aria-hidden="true">✂</span> Stylists</a>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/staff"><span class="ni" aria-hidden="true">◉</span> Team &amp; staff</a>
+      <button type="button" class="nav-item admin-only" id="navBookingSettings"><span class="ni" aria-hidden="true">⚙</span> Booking &amp; Time Settings</button>
+      <div class="nav-label staff-only">Your shift</div>
+      <div class="nav-item staff-only" style="cursor:default;background:#f9fafb;"><span class="ni" aria-hidden="true">✓</span> Queue access</div>
+      <div class="sidebar-footer">
+        Signed in as
+        <strong id="sidebarUser">—</strong>
+      </div>
+      <button type="button" class="nav-item mobile-only" id="sideMenuLogout">
+        <span class="ni" aria-hidden="true">↩</span> Log out
+      </button>
+    </aside>
+
+    <div class="app-main">
+      <header class="main-head">
+        <div>
+          <h1 id="dashTitle">Dashboard</h1>
+          <p id="dashSub">Loading…</p>
+        </div>
+        <div class="main-head-actions admin-only">
+          <a class="btn-blue admin-only" href="/aakriti/dashboard/staff" id="createStaffBtnMain">＋ Create staff</a>
+            </div>
+      </header>
+
+      <div class="stat-grid" id="statsSection">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon" aria-hidden="true">⏳</div>
+            <span class="stat-trend" aria-hidden="true">●</span>
+                </div>
+          <div class="k">In queue</div>
+          <div class="v" id="statPending">0</div>
+              </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon" aria-hidden="true">✓</div>
+            <span class="stat-trend" aria-hidden="true">●</span>
+            </div>
+          <div class="k">Completed</div>
+          <div class="v" id="statCompleted">0</div>
+              </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon" aria-hidden="true">!</div>
+            <span class="stat-trend" style="color:#f59e0b;">●</span>
+            </div>
+          <div class="k">No-show / other</div>
+          <div class="v" id="statOther">0</div>
+            </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon" aria-hidden="true">#</div>
+            <span class="stat-trend" aria-hidden="true">●</span>
+          </div>
+          <div class="k">Total</div>
+          <div class="v" id="statTotal">0</div>
+        </div>
+      </div>
+
+      <div class="charts-row admin-only" id="chartsSection">
+        <div class="chart-card chart-card--bars">
+          <div class="chart-card-header">
+            <div class="chart-card-icon" aria-hidden="true">📊</div>
+            <div class="chart-card-titles">
+              <h3>Bookings (last 7 days)</h3>
+              <p class="sub">New appointments created per day</p>
+          </div>
+          </div>
+          <div class="chart-card-body chart-card-body--bars">
+            <div class="bar-chart-root" id="barChart" role="img" aria-label="Bookings per day, last 7 days"></div>
+          </div>
+        </div>
+        <div class="chart-card chart-card--donut">
+          <div class="chart-card-header">
+            <div class="chart-card-icon" aria-hidden="true">◷</div>
+            <div class="chart-card-titles">
+              <h3>Status mix</h3>
+              <p class="sub">Share of today’s records</p>
+            </div>
+          </div>
+          <div class="chart-card-body chart-card-body--donut">
+            <div class="donut-wrap">
+              <div class="donut" id="donutEl" style="background: conic-gradient(#e5e7eb 0% 100%);">
+                <div class="donut-inner">
+                  <span>Total</span>
+                  <strong id="donutPct">0</strong>
+                </div>
+              </div>
+              <div id="donutLegend" class="donut-legend-wrap"></div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+      <div class="staff-panel staff-only" id="staffPanel">
+        <div>
+          <h3>Staff workspace</h3>
+          <p>Add walk-ins and update the live queue. Team management and analytics are available to admins only. Booking site: <strong>aakriti.kochi.one</strong> for customers.</p>
+        </div>
+        <div class="staff-badge" id="staffNextBadge">Next: —</div>
+      </div>
+
+      <section class="layout">
+        <div class="queue-sidebar" id="queue-table">
+        <div class="card queue-card">
+          <div class="card-head">
+              <h3 id="queueCardTitle">Queue &amp; appointments</h3>
+              <div class="queue-head-tools">
+                <input id="queueDateFilter" class="queue-date-input date-modern" type="text" readonly autocomplete="off" aria-label="Filter queue by preferred date" />
+                <button class="btn-lite mini-btn" id="btnQueueDateToday" type="button">Today</button>
+            <button class="btn-lite mini-btn" onclick="load()">Reload</button>
+              </div>
+          </div>
+          <div class="card-body queue-card-body">
+            <div id="tableWrap" class="muted">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </div>
+  </div>
+
+  <div id="bookingModal" class="modal-backdrop" role="dialog" aria-modal="true"
+       aria-labelledby="bookingCardTitle" aria-describedby="bookingCardHint" aria-hidden="true">
+    <div class="modal-panel" role="document">
+      <div class="modal-head">
+        <div>
+          <h2 id="bookingCardTitle">New booking</h2>
+          <p id="bookingCardHint" class="modal-sub">Walk-in or call-in · queue auto-assigned</p>
+        </div>
+        <button type="button" class="modal-close" onclick="closeBookingModal()" aria-label="Close dialog">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-booking">
+          <div class="form-err" id="bookingFormErr"></div>
+          <!-- Row 1: Mobile -->
+          <div class="field" style="margin:0">
+            <label for="mobile">Mobile<span class="req-star">*</span></label>
+            <div class="phone-composite" role="group" aria-label="Phone number">
+              <div class="country-select-wrap">
+                <select id="countryCode" aria-label="Country code">
+                  <option value="+91" selected>🇮🇳 +91</option>
+                  <option value="+971">🇦🇪 +971</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                  <option value="+61">🇦🇺 +61</option>
+                  <option value="+65">🇸🇬 +65</option>
+                  <option value="+966">🇸🇦 +966</option>
+                </select>
+              </div>
+              <input id="mobile" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="98765 43210" aria-label="Mobile number without country code" />
+            </div>
+          </div>
+          <!-- Row 2: People + Preferred date -->
+          <div class="form-row-2">
+            <div class="field" style="margin:0">
+              <label>No. of people</label>
+              <input id="peopleCount" type="hidden" value="1" />
+              <div class="people-stepper" style="max-width:none;width:100%;" role="group" aria-label="Number of people">
+                <button type="button" class="people-step-btn" id="peopleMinus" aria-label="Decrease">−</button>
+                <div class="people-step-value" id="peopleDisplay" aria-live="polite">1</div>
+                <button type="button" class="people-step-btn" id="peoplePlus" aria-label="Increase">+</button>
+              </div>
+            </div>
+            <div class="field" style="margin:0">
+              <label for="preferredDate">Preferred date</label>
+              <input type="text" id="preferredDate" class="date-modern" readonly autocomplete="off" />
+            </div>
+          </div>
+          <!-- Row 3: Customer name + M/F inline (Person 1) -->
+          <div class="field" style="margin:0">
+            <label for="name">Customer name<span class="req-star">*</span></label>
+            <div class="name-gender-row">
+              <input id="name" placeholder="Full name" autocomplete="name" />
+              <div class="gender-mini-wrap" role="group" aria-label="Gender">
+                <button type="button" class="gender-mini-btn active" data-gender="male">Male</button>
+                <button type="button" class="gender-mini-btn" data-gender="female">Female</button>
+              </div>
+            </div>
+          </div>
+          <div class="field" style="margin:0">
+            <label for="preferredStylistName">Preferred stylist</label>
+            <select id="preferredStylistName" class="booking-stylist-select" aria-label="Preferred stylist">
+              <option value="">No preference</option>
+            </select>
+            <p class="booking-stylist-hint" id="preferredStylistHint">Stylists load by selected gender.</p>
+          </div>
+          <!-- Row 4: Guest blocks (dynamic for person 2, 3...) -->
+          <div id="guestsSection"></div>
+          <!-- Row 5: Notes -->
+          <div class="field" style="margin:0">
+            <label for="notes">Notes</label>
+            <textarea id="notes" rows="3" placeholder="Services / notes"></textarea>
+          </div>
+          <!-- Actions -->
+          <div class="form-booking-actions">
+            <button type="button" class="btn" onclick="addAppointment()">Create appointment</button>
+            <button type="button" class="btn-modal-secondary" onclick="closeBookingModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Staff selection modal -->
+  <div id="staffModal" class="modal-backdrop" role="dialog" aria-modal="true"
+       aria-labelledby="staffModalTitle" aria-hidden="true">
+    <div class="modal-panel modal-panel-sm" role="document">
+      <div class="modal-head">
+        <div>
+          <h2 id="staffModalTitle">Mark as complete</h2>
+          <p id="staffModalHint" class="modal-sub">Who served this customer?</p>
+        </div>
+        <button type="button" class="modal-close" onclick="closeStaffModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="staffModalPersonCard" class="staff-modal-person-card" style="display:none;"></div>
+        <p class="staff-section-label" id="staffSectionLabel">Select staff member</p>
+        <div id="staffGrid" class="staff-grid"></div>
+        <div class="form-booking-actions">
+          <button type="button" class="btn" id="btnConfirmPersonDone" onclick="confirmPersonComplete()">Confirm &amp; mark complete</button>
+          <button type="button" class="btn-modal-secondary" onclick="closeStaffModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking & Time Settings modal -->
+  <div id="settingsModal" class="modal-backdrop" role="dialog" aria-modal="true"
+       aria-labelledby="settingsModalTitle" aria-hidden="true">
+    <div class="modal-panel" role="document">
+      <div class="modal-head">
+        <div>
+          <h2 id="settingsModalTitle">Booking &amp; Time Settings</h2>
+          <p class="modal-sub">Control when and how far in advance customers can book.</p>
+        </div>
+        <button type="button" class="modal-close" onclick="closeSettingsModal()" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-stack">
+
+          <!-- Close Bookings -->
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Close Bookings <span id="bookingStatusPill" class="booking-status-pill open" style="margin-left:8px;">● Open</span></div>
+              <div class="settings-row-desc">When on, customers cannot make new online bookings. You can still add bookings manually from this dashboard.</div>
+            </div>
+            <div class="toggle-wrap">
+              <span class="toggle-lbl" id="closedToggleLbl">Off</span>
+              <label class="toggle-switch" aria-label="Close bookings toggle">
+                <input type="checkbox" id="settingBookingClosed" />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Closed message -->
+          <div class="settings-row col closed-msg-row" id="settingClosedMsgRow">
+            <div style="width:100%">
+              <div class="settings-row-label">Message shown to customers</div>
+              <div class="settings-row-desc" style="margin-bottom:8px;">Displayed on the booking page while bookings are closed.</div>
+              <textarea id="settingClosedMessage" rows="2"
+                style="width:100%;border:1px solid var(--border);border-radius:12px;padding:10px 13px;font:inherit;font-size:14px;resize:vertical;"
+                placeholder="e.g. We are temporarily closed. Please check back soon."></textarea>
+            </div>
+          </div>
+
+          <!-- Advance Booking Limit -->
+          <div class="settings-row col">
+            <div>
+              <div class="settings-row-label">Advance Booking Limit</div>
+              <div class="settings-row-desc">How many days ahead customers can set a preferred date when booking. Applies to the customer booking page and admin new bookings.</div>
+            </div>
+            <select id="settingAdvanceLimit" class="settings-select">
+              <option value="same_day">Same day only</option>
+              <option value="1">1 day ahead</option>
+              <option value="2">2 days ahead</option>
+              <option value="3">3 days ahead</option>
+              <option value="4">4 days ahead</option>
+              <option value="5">5 days ahead</option>
+              <option value="6">6 days ahead</option>
+              <option value="7">7 days ahead</option>
+              <option value="any" selected>Any day (no limit)</option>
+            </select>
+          </div>
+
+          <!-- Actions -->
+          <div class="settings-actions">
+            <button type="button" class="btn" onclick="savePortalSettings()">Save Settings</button>
+            <span class="settings-saved-msg" id="settingsSavedMsg">Saved!</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
+  <script>
+    (function(){
+      var q = new URLSearchParams(location.search);
+      var st = q.get('setToken');
+      var ret = q.get('returnLogin');
+      if (st) {
+        localStorage.setItem('aakritiPortalToken', st);
+        if (ret) localStorage.setItem('aakritiPortalReturnLogin', ret);
+        q.delete('setToken');
+        q.delete('returnLogin');
+        var qs = q.toString();
+        history.replaceState({}, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+      }
+    })();
+    var isTodayBookingsPage = /\/aakriti\/dashboard\/today-bookings\/?$/.test(window.location.pathname);
+    if (isTodayBookingsPage) document.body.classList.add('today-bookings-page');
+    var API = '/api/aakriti/portal';
+    var sessionRole = '';
+    var sessionUser = '';
+    var sessionGender = '';
+    var genderFilter = null; // null | 'male' | 'female'
+    var stylistStaffByGender = { male: [], female: [] };
+    function authHeaders() {
+      var t = localStorage.getItem('aakritiPortalToken');
+      return { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' };
+    }
+    function portalLogout() {
+      localStorage.removeItem('aakritiPortalToken');
+      localStorage.removeItem('aakritiPortalRole');
+      localStorage.removeItem('aakritiPortalUsername');
+      var ret = localStorage.getItem('aakritiPortalReturnLogin');
+      localStorage.removeItem('aakritiPortalReturnLogin');
+      window.location.href = ret || '/aakriti/login';
+    }
+    async function api(path, opts) {
+      var o = opts || {};
+      var h = Object.assign({}, authHeaders(), o.headers || {});
+      var res = await fetch(path, Object.assign({}, o, { headers: h }));
+      var json = await res.json().catch(function(){ return {}; });
+      if (res.status === 401) { portalLogout(); throw new Error('Session expired'); }
+      if (!res.ok) throw new Error(json.message || 'Request failed');
+      return json;
+    }
+    async function loadStylistStaff(gender) {
+      var g = gender === 'female' ? 'female' : 'male';
+      if (stylistStaffByGender[g].length) return stylistStaffByGender[g];
+      var j = await api(API + '/staff-members?gender=' + encodeURIComponent(g));
+      var rows = (j.data && Array.isArray(j.data.staff)) ? j.data.staff : [];
+      stylistStaffByGender[g] = rows
+        .map(function(x) {
+          if (typeof x === 'string') return { name: x, mediaUrl: '', mediaKind: '' };
+          return {
+            name: x && x.name ? String(x.name) : '',
+            mediaUrl: x && x.mediaUrl ? String(x.mediaUrl) : '',
+            mediaKind: x && x.mediaKind ? String(x.mediaKind) : ''
+          };
+        })
+        .filter(function(x) { return !!x.name; });
+      return stylistStaffByGender[g];
+    }
+    async function populateStylistSelect(selectEl, gender, preserveCurrent) {
+      if (!selectEl) return;
+      var g = gender === 'female' ? 'female' : 'male';
+      var existing = preserveCurrent ? String(selectEl.value || selectEl.getAttribute('data-preserve-stylist') || '') : '';
+      if (selectEl.hasAttribute('data-preserve-stylist')) selectEl.removeAttribute('data-preserve-stylist');
+      try {
+        var list = await loadStylistStaff(g);
+        var names = list.map(function(x){ return String(x.name || '').trim(); }).filter(Boolean);
+        names = Array.from(new Set(names)).sort(function(a, b){ return a.localeCompare(b); });
+        selectEl.innerHTML = '<option value="">No preference</option>' +
+          names.map(function(name){ return '<option value="' + esc(name) + '">' + esc(name) + '</option>'; }).join('');
+        selectEl.value = (existing && names.indexOf(existing) !== -1) ? existing : '';
+      } catch (e) {
+        selectEl.innerHTML = '<option value="">No preference</option>';
+        selectEl.value = '';
+      }
+    }
+    async function refreshPreferredStylistSelect(gender, preserveCurrent) {
+      var g = gender === 'female' ? 'female' : 'male';
+      var selectEl = document.getElementById('preferredStylistName');
+      var hintEl = document.getElementById('preferredStylistHint');
+      if (!selectEl) return;
+      try {
+        await populateStylistSelect(selectEl, g, preserveCurrent);
+        var names = Array.from(selectEl.options).map(function(o){ return o.value; }).filter(Boolean);
+        if (hintEl) {
+          if (!names.length) {
+            hintEl.textContent = g === 'female'
+              ? 'No active ladies stylists are available right now.'
+              : 'No active gents stylists are available right now.';
+          } else {
+            hintEl.textContent = names.length + ' ' + (g === 'female' ? 'ladies' : 'gents') + ' stylist' + (names.length === 1 ? '' : 's') + ' available.';
+          }
+        }
+      } catch (e) {
+        selectEl.innerHTML = '<option value="">No preference</option>';
+        selectEl.value = '';
+        if (hintEl) hintEl.textContent = 'Could not load stylists right now. Continue without selecting one.';
+      }
+    }
+    function wireGuestBlocks(sec) {
+      if (!sec) return;
+      sec.querySelectorAll('.guest-block').forEach(function(block) {
+        var selectEl = block.querySelector('.guest-stylist-select');
+        var activeBtn = block.querySelector('.guest-gender-btn.active');
+        var gender = activeBtn ? activeBtn.getAttribute('data-gender') : 'male';
+        populateStylistSelect(selectEl, gender, true).catch(function(){});
+        block.querySelectorAll('.guest-gender-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var wrap = btn.closest('.gender-mini-wrap');
+            wrap.querySelectorAll('.guest-gender-btn').forEach(function(b){ b.classList.remove('active'); });
+            btn.classList.add('active');
+            populateStylistSelect(selectEl, btn.getAttribute('data-gender'), true).catch(function(){});
+          });
+        });
+      });
+    }
+    function applyRoleUI(role, username, gender) {
+      sessionRole = role || '';
+      sessionUser = username || '';
+      sessionGender = gender || '';
+      var isAdmin = role === 'admin';
+      document.body.classList.toggle('role-admin', isAdmin);
+      document.body.classList.toggle('role-staff', !isAdmin);
+      document.body.classList.toggle('staff-gender-male', !isAdmin && gender === 'male');
+      document.body.classList.toggle('staff-gender-female', !isAdmin && gender === 'female');
+      var dashLink = document.getElementById('navDashboardLink');
+      var todayLink = document.getElementById('navTodayBookingsLink');
+      if (dashLink) dashLink.classList.toggle('active', !isTodayBookingsPage);
+      if (todayLink) todayLink.classList.toggle('active', isTodayBookingsPage);
+      var su = document.getElementById('sidebarUser');
+      if (su) su.textContent = username || (isAdmin ? 'Admin' : 'Staff');
+      var mainBtn = document.getElementById('createStaffBtnMain');
+      if (mainBtn) mainBtn.style.display = isAdmin ? '' : 'none';
+      var t = document.getElementById('dashTitle');
+      var s = document.getElementById('dashSub');
+      if (t && s) {
+        if (isTodayBookingsPage) {
+          t.textContent = 'Today bookings';
+          s.textContent = 'Pending queue and appointment actions only.';
+          s.hidden = false;
+        } else if (isAdmin) {
+          t.textContent = 'Dashboard';
+          s.textContent = '';
+          s.hidden = true;
+        } else {
+          t.textContent = 'Today’s queue';
+          s.textContent = 'Check in walk-ins and move the line. For customer bookings, they use aakriti.kochi.one — this screen is for the team only.';
+          s.hidden = false;
+        }
+      }
+      var bTitle = document.getElementById('bookingCardTitle');
+      var bHint = document.getElementById('bookingCardHint');
+      if (bTitle && bHint) {
+        if (isAdmin) {
+          bTitle.textContent = 'New booking';
+          bHint.textContent = 'Walk-in or call-in · queue auto-assigned';
+        } else {
+          bTitle.textContent = 'Add to queue';
+          bHint.textContent = 'Serve the next guest — position updates for everyone';
+        }
+      }
+      var qTitle = document.getElementById('queueCardTitle');
+      if (qTitle) {
+        qTitle.textContent = isAdmin ? 'Queue & appointments' : 'Live queue';
+      }
+    }
+    async function ensureSession() {
+      var t = localStorage.getItem('aakritiPortalToken');
+      if (!t) {
+        var ret = localStorage.getItem('aakritiPortalReturnLogin');
+        window.location.href = ret || '/aakriti/login';
+        return false;
+      }
+      var r = await fetch(API + '/me', { headers: authHeaders() });
+      var j = await r.json().catch(function(){ return {}; });
+      if (!r.ok || j.status !== 'success') { portalLogout(); return false; }
+      applyRoleUI(j.data.role, j.data.username, j.data.gender);
+      return true;
+    }
+    var queueDatePicker = null;
+    var preferredDatePicker = null;
+    function todayYmdLocal() {
+      var d = new Date();
+      var y = d.getFullYear();
+      var m = String(d.getMonth() + 1).padStart(2, '0');
+      var day = String(d.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
+    }
+    function initDatePickers() {
+      if (typeof flatpickr === 'undefined') return;
+      var qd = document.getElementById('queueDateFilter');
+      if (qd) {
+        queueDatePicker = flatpickr(qd, {
+          dateFormat: 'Y-m-d',
+          defaultDate: new Date(),
+          minDate: 'today',
+          allowInput: false,
+          disableMobile: true,
+          monthSelectorType: 'static',
+          locale: { firstDayOfWeek: 1 },
+          onChange: function(){ load().catch(function(){}); }
+        });
+      }
+      var pd = document.getElementById('preferredDate');
+      if (pd) {
+        preferredDatePicker = flatpickr(pd, {
+          dateFormat: 'Y-m-d',
+          defaultDate: new Date(),
+          minDate: 'today',
+          allowInput: false,
+          disableMobile: true,
+          monthSelectorType: 'static',
+          locale: { firstDayOfWeek: 1 }
+        });
+      }
+    }
+    function openBookingModal() {
+      var m = document.getElementById('bookingModal');
+      if (!m) return;
+      document.getElementById('name').value = '';
+      document.getElementById('mobile').value = '';
+      document.getElementById('countryCode').value = '+91';
+      document.getElementById('notes').value = '';
+      setGender('male');
+      var prefStylist = document.getElementById('preferredStylistName');
+      if (prefStylist) prefStylist.value = '';
+      if (preferredDatePicker) {
+        preferredDatePicker.setDate(currentQueueDate(), false);
+      } else {
+        var pd = document.getElementById('preferredDate');
+        if (pd) pd.value = currentQueueDate();
+      }
+      setPeopleCount(1);
+      m.classList.add('is-open');
+      m.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function() {
+        var n = document.getElementById('name');
+        if (n) n.focus();
+      }, 50);
+    }
+    function closeBookingModal() {
+      var m = document.getElementById('bookingModal');
+      if (!m) return;
+      m.classList.remove('is-open');
+      m.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      clearBookingFormErr();
+      var nameRow = document.querySelector('#bookingModal .name-gender-row');
+      if (nameRow) nameRow.classList.remove('field-error');
+      var phoneComp = document.querySelector('#bookingModal .phone-composite');
+      if (phoneComp) phoneComp.classList.remove('field-error');
+    }
+
+    /* ── Staff modal state ── */
+    var staffModalState = { apptId: null, personIndex: null, gender: '' };
+    var selectedStaff = '';
+
+    async function openStaffModal(apptId, personIndex, personName, gender) {
+      staffModalState = { apptId: apptId, personIndex: personIndex, gender: gender };
+      selectedStaff = '';
+
+      // Person info card
+      var card = document.getElementById('staffModalPersonCard');
+      if (card) {
+        var avatarClass = gender === 'male' ? 'male' : gender === 'female' ? 'female' : 'neutral';
+        var initials = (personName || '?').trim().charAt(0).toUpperCase();
+        var genderLabel = gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : '';
+        card.style.display = 'flex';
+        card.innerHTML =
+          '<div class="staff-modal-person-avatar ' + avatarClass + '">' + initials + '</div>' +
+          '<div class="staff-modal-person-info">' +
+            '<p class="staff-modal-person-name">' + esc(personName) + '</p>' +
+            (genderLabel ? '<p class="staff-modal-person-meta">' + genderLabel + '</p>' : '') +
+          '</div>';
+      }
+
+      // Section label
+      var label = document.getElementById('staffSectionLabel');
+      if (label) {
+        label.textContent = gender === 'female' ? 'Ladies staff' : 'Gents staff';
+      }
+
+      var grid = document.getElementById('staffGrid');
+      if (grid) {
+        grid.innerHTML = '<div class="muted">Loading staff...</div>';
+      }
+      try {
+        var staffList = await loadStylistStaff(gender);
+        if (!grid) return;
+        if (!staffList.length) {
+          grid.innerHTML = '<div class="muted">No staff found. Ask admin to add stylists.</div>';
+          return;
+        }
+        grid.innerHTML = staffList.map(function(s){
+          var initials2 = s.name.charAt(0).toUpperCase();
+          var mediaHtml = '';
+          if (s.mediaUrl) {
+            if (s.mediaKind === 'video') {
+              mediaHtml = '<video class="staff-btn-avatar" src="' + esc(s.mediaUrl) + '" muted playsinline></video>';
+            } else {
+              mediaHtml = '<img class="staff-btn-avatar" src="' + esc(s.mediaUrl) + '" alt="' + esc(s.name) + '" />';
+            }
+          } else {
+            mediaHtml = '<div class="staff-btn-avatar">' + initials2 + '</div>';
+          }
+          return '<button type="button" class="staff-btn" data-staff="' + esc(s.name) + '">' +
+            '<span class="staff-btn-check">✓</span>' +
+            mediaHtml +
+            esc(s.name) +
+          '</button>';
+        }).join('');
+        grid.querySelectorAll('.staff-btn').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            grid.querySelectorAll('.staff-btn').forEach(function(b){ b.classList.remove('selected'); });
+            btn.classList.add('selected');
+            selectedStaff = btn.getAttribute('data-staff');
+          });
+        });
+      } catch (error) {
+        if (grid) {
+          grid.innerHTML = '<div class="muted" style="color:#991b1b;">' + esc(error.message || 'Failed to load staff') + '</div>';
+        }
+      }
+
+      var m = document.getElementById('staffModal');
+      if (m) {
+        m.classList.add('is-open');
+        m.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function closeStaffModal() {
+      var m = document.getElementById('staffModal');
+      if (!m) return;
+      m.classList.remove('is-open');
+      m.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      staffModalState = { apptId: null, personIndex: null, gender: '' };
+      selectedStaff = '';
+    }
+    async function confirmPersonComplete() {
+      if (!selectedStaff) { alert('Please select a staff member.'); return; }
+      var s = staffModalState;
+      var staffNameToSend = selectedStaff; // capture before closeStaffModal resets it
+      closeStaffModal();
+      try {
+        await api(API + '/appointments/' + encodeURIComponent(s.apptId) + '/person-complete', {
+          method: 'POST',
+          body: JSON.stringify({ personIndex: s.personIndex, staffName: staffNameToSend })
+        });
+        await load();
+      } catch (e) { alert(e.message); }
+    }
+    function openSideMenu() {
+      var menu = document.getElementById('sideMenu');
+      var back = document.getElementById('sideMenuBackdrop');
+      if (!menu || !back) return;
+      menu.classList.add('is-open');
+      back.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSideMenu() {
+      var menu = document.getElementById('sideMenu');
+      var back = document.getElementById('sideMenuBackdrop');
+      if (!menu || !back) return;
+      menu.classList.remove('is-open');
+      back.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+    function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function chipClass(item){
+      if (item.status === 'pending') {
+        if (item.genderQueuePos != null) {
+          return item.gender === 'male' ? 'pending gents' : 'pending ladies';
+        }
+        return 'pending';
+      }
+      var m = { finished: 'finished', unreachable: 'unreachable', no_show: 'no_show', cancelled: 'cancelled' };
+      return m[item.status] || 'finished';
+    }
+    function queueDisplay(item){
+      if (item.status !== 'pending') return item.queueLabel || item.status || '';
+      if (item.genderQueuePos != null) {
+        var prefix = item.gender === 'male' ? 'G·' : 'L·';
+        return prefix + (item.genderQueuePos === 1 ? 'next' : String(item.genderQueuePos));
+      }
+      if (item.queueLabel) return item.queueLabel;
+      return item.queuePosition === 0 ? 'next' : String(item.queuePosition);
+    }
+    function currentQueueDate() {
+      var qd = document.getElementById('queueDateFilter');
+      return qd && qd.value ? qd.value : todayYmdLocal();
+    }
+    function actionCell(item){
+      var id = esc(item.id);
+      var isStaff = document.body.classList.contains('role-staff');
+      var sepBeforeDelete = isStaff ? '' : '<li class="action-dd-sep" aria-hidden="true"></li>';
+      var deleteBtn = isStaff ? '' : '<li><button type="button" class="action-dd-item danger" data-delete="1">Delete record</button></li>';
+      var opts = '';
+      if (item.status === 'pending') {
+        opts =
+          '<li><button type="button" class="action-dd-item" data-resolve="finished">Mark as complete</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="unreachable">Customer not reachable</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="no_show">No-show</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="cancelled">Cancel appointment</button></li>' +
+          sepBeforeDelete;
+      } else {
+        opts =
+          '<li><button type="button" class="action-dd-item" data-resolve="pending">Return to queue</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="finished">Mark as complete</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="unreachable">Customer not reachable</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="no_show">No-show</button></li>' +
+          '<li><button type="button" class="action-dd-item" data-resolve="cancelled">Cancel appointment</button></li>' +
+          sepBeforeDelete;
+      }
+      return '<details class="action-dd" data-appt-id="' + id + '">' +
+        '<summary class="action-dd-sum">Actions <span aria-hidden="true">▾</span></summary>' +
+        '<ul class="action-dd-list">' + opts + deleteBtn +
+        '</ul></details>';
+    }
+    var selectedGender = 'male';
+    function setGender(g) {
+      selectedGender = g;
+      // Handle both full-width gender-btn (customer site) and mini gender-mini-btn (portal)
+      document.querySelectorAll('.gender-btn[data-gender], .gender-mini-btn[data-gender]').forEach(function(btn){
+        if (!btn.closest('#guestsSection')) {
+          btn.classList.toggle('active', btn.getAttribute('data-gender') === g);
+        }
+      });
+      refreshPreferredStylistSelect(g, true).catch(function(){});
+    }
+    function buildGuestFields(n) {
+      var sec = document.getElementById('guestsSection');
+      if (!sec) return;
+      if (n <= 1) { sec.innerHTML = ''; return; }
+      var html = '';
+      for (var i = 2; i <= n; i++) {
+        var existing = sec.querySelector('[data-guest="' + i + '"]');
+        var prevName = existing ? existing.querySelector('.guest-name-input').value : '';
+        var prevGender = existing && existing.querySelector('.guest-gender-btn.active') ? existing.querySelector('.guest-gender-btn.active').getAttribute('data-gender') : 'male';
+        var prevStylist = existing && existing.querySelector('.guest-stylist-select') ? existing.querySelector('.guest-stylist-select').value : '';
+        html += '<div class="guest-block" data-guest="' + i + '">' +
+          '<p class="guest-block-title">Person ' + i + '</p>' +
+          '<div class="name-gender-row">' +
+            '<input class="guest-name-input" type="text" autocomplete="off" placeholder="Name" value="' + esc(prevName) + '" />' +
+            '<div class="gender-mini-wrap" role="group" aria-label="Gender of person ' + i + '">' +
+              '<button type="button" class="gender-mini-btn guest-gender-btn' + (prevGender === 'male' ? ' active' : '') + '" data-gender="male">Male</button>' +
+              '<button type="button" class="gender-mini-btn guest-gender-btn' + (prevGender === 'female' ? ' active' : '') + '" data-gender="female">Female</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="field person-stylist-field" style="margin:0">' +
+            '<label>Preferred stylist</label>' +
+            '<select class="booking-stylist-select guest-stylist-select" aria-label="Preferred stylist for person ' + i + '" data-preserve-stylist="' + esc(prevStylist) + '">' +
+              '<option value="">No preference</option>' +
+            '</select>' +
+          '</div>' +
+        '</div>';
+      }
+      sec.innerHTML = html;
+      wireGuestBlocks(sec);
+    }
+    function collectGuests() {
+      var sec = document.getElementById('guestsSection');
+      if (!sec) return [];
+      return Array.from(sec.querySelectorAll('.guest-block')).map(function(block){
+        var activeBtn = block.querySelector('.guest-gender-btn.active');
+        var stylistEl = block.querySelector('.guest-stylist-select');
+        return {
+          name: (block.querySelector('.guest-name-input').value || '').trim(),
+          gender: activeBtn ? activeBtn.getAttribute('data-gender') : 'male',
+          preferredStylistName: stylistEl ? (stylistEl.value || '').trim() : ''
+        };
+      });
+    }
+    var PEOPLE_MIN = 1;
+    var PEOPLE_MAX = 12;
+    function setPeopleCount(value){
+      var n = parseInt(value, 10);
+      if (!Number.isFinite(n)) n = PEOPLE_MIN;
+      n = Math.max(PEOPLE_MIN, Math.min(PEOPLE_MAX, n));
+      var selected = String(n);
+      document.getElementById('peopleCount').value = selected;
+      var disp = document.getElementById('peopleDisplay');
+      if (disp) disp.textContent = selected;
+      var minus = document.getElementById('peopleMinus');
+      var plus = document.getElementById('peoplePlus');
+      if (minus) minus.disabled = n <= PEOPLE_MIN;
+      if (plus) plus.disabled = n >= PEOPLE_MAX;
+      buildGuestFields(n);
+    }
+    function bumpPeople(delta) {
+      var cur = parseInt(document.getElementById('peopleCount').value, 10) || 1;
+      setPeopleCount(cur + delta);
+    }
+    function updateCharts(items) {
+      var barEl = document.getElementById('barChart');
+      if (!barEl) return;
+      var days = [];
+      for (var i = 6; i >= 0; i--) {
+        var dt = new Date();
+        dt.setHours(0, 0, 0, 0);
+        dt.setDate(dt.getDate() - i);
+        days.push({ t: dt.getTime(), label: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()] });
+      }
+      var counts = days.map(function() { return 0; });
+      items.forEach(function(ap) {
+        var c = new Date(ap.createdAt).getTime();
+        for (var j = 0; j < days.length; j++) {
+          var dayEnd = days[j].t + 86400000;
+          if (c >= days[j].t && c < dayEnd) {
+            counts[j]++;
+            break;
+          }
+        }
+      });
+      var max = Math.max.apply(null, counts.concat([1]));
+      barEl.innerHTML =
+        '<div class="bar-chart">' +
+        days.map(function(d, idx) {
+          var h = Math.round((counts[idx] / max) * 100);
+          return (
+            '<div class="bar-col">' +
+            '<span class="bar-val">' + counts[idx] + '</span>' +
+            '<div class="bar-track"><div class="bar" style="height:' + h + '%" title="' + counts[idx] + ' bookings"></div></div>' +
+            '<span class="bar-x">' + d.label + '</span>' +
+            '</div>'
+          );
+        }).join('') +
+        '</div>';
+
+      var pending = items.filter(function(i) { return i.status === 'pending'; }).length;
+      var finished = items.filter(function(i) { return i.status === 'finished'; }).length;
+      var other = items.length - pending - finished;
+      var donut = document.getElementById('donutEl');
+      var leg = document.getElementById('donutLegend');
+      var pct = document.getElementById('donutPct');
+      if (!items.length) {
+        if (donut) donut.style.background = 'conic-gradient(#e5e7eb 0% 100%)';
+        if (pct) pct.textContent = '0';
+        if (leg) {
+          leg.innerHTML = '<div class="chart-empty">No appointments yet. Add a booking to see status distribution.</div>';
+        }
+        return;
+      }
+      var total = items.length;
+      var pP = (pending / total) * 100;
+      var pF = (finished / total) * 100;
+      var pO = (other / total) * 100;
+      if (donut) {
+        donut.style.background = 'conic-gradient(' +
+          '#2563eb 0% ' + pP + '%, ' +
+          '#7c3aed ' + pP + '% ' + (pP + pF) + '%, ' +
+          '#f59e0b ' + (pP + pF) + '% ' + (pP + pF + pO) + '%, ' +
+          '#e2e8f0 ' + (pP + pF + pO) + '% 100%)';
+      }
+      if (pct) pct.textContent = String(total);
+      if (leg) {
+        leg.innerHTML =
+          '<ul class="donut-legend-list">' +
+          '<li><span class="dl-dot" style="background:#2563eb"></span><span class="dl-label">Waiting</span><span class="dl-val">' + pending + '</span><span class="dl-pct">' + Math.round(pP) + '%</span></li>' +
+          '<li><span class="dl-dot" style="background:#7c3aed"></span><span class="dl-label">Done</span><span class="dl-val">' + finished + '</span><span class="dl-pct">' + Math.round(pF) + '%</span></li>' +
+          '<li><span class="dl-dot" style="background:#f59e0b"></span><span class="dl-label">Other</span><span class="dl-val">' + other + '</span><span class="dl-pct">' + Math.round(pO) + '%</span></li>' +
+          '</ul>';
+      }
+    }
+    function setGenderFilter(gender) {
+      genderFilter = genderFilter === gender ? null : gender; // toggle off if same
+      var gBtn = document.getElementById('navGentsFilter');
+      var lBtn = document.getElementById('navLadiesFilter');
+      if (gBtn) gBtn.classList.toggle('gender-filter-active', genderFilter === 'male');
+      if (lBtn) lBtn.classList.toggle('gender-filter-active', genderFilter === 'female');
+      load().catch(function(){});
+      closeSideMenu();
+    }
+    function updateGenderCounts(items) {
+      var pending = items.filter(function(i){ return i.status === 'pending'; });
+      var gents = 0, ladies = 0;
+      pending.forEach(function(item) {
+        if (item.gender === 'male') gents++;
+        else if (item.gender === 'female') ladies++;
+        if (Array.isArray(item.guests)) {
+          item.guests.forEach(function(g){
+            if (g.gender === 'male') gents++;
+            else if (g.gender === 'female') ladies++;
+          });
+        }
+      });
+      var gc = document.getElementById('gentsCount');
+      var lc = document.getElementById('ladiesCount');
+      if (gc) gc.textContent = gents > 0 ? String(gents) : '';
+      if (lc) lc.textContent = ladies > 0 ? String(ladies) : '';
+    }
+    function renderGenderFilteredView(items, gender) {
+      var gLabel = gender === 'male' ? 'Gents' : 'Ladies';
+      var chipClass = gender === 'male' ? 'gents' : 'ladies';
+      var pending = items.filter(function(i){ return i.status === 'pending'; })
+        .sort(function(a,b){ return a.queuePosition - b.queuePosition; });
+      // Expand to individual persons of this gender, sorted by their gender queue pos
+      var persons = [];
+      pending.forEach(function(item) {
+        var ppArr = Array.isArray(item.personQueuePositions) ? item.personQueuePositions : [];
+        // Primary person
+        if (item.gender === gender) {
+          var pos = (ppArr[0] && ppArr[0].gender === gender) ? ppArr[0].pos : item.genderQueuePos;
+          persons.push({ pos: pos, name: item.name, gender: item.gender, staffName: item.staffName, preferredStylistName: item.preferredStylistName, personIdx: 0, bookingName: null, mobile: item.mobile, item: item });
+        }
+        // Guests
+        if (Array.isArray(item.guests)) {
+          item.guests.forEach(function(g, gi) {
+            if (g.gender === gender) {
+              var ppEntry = ppArr[gi + 1];
+              var gPos = (ppEntry && ppEntry.gender === gender) ? ppEntry.pos : null;
+              persons.push({ pos: gPos, name: g.name || ('Person ' + (gi+2)), gender: g.gender, staffName: g.staffName, preferredStylistName: g.preferredStylistName, personIdx: gi+1, bookingName: item.name, mobile: item.mobile, item: item });
+            }
+          });
+        }
+      });
+      persons.sort(function(a,b){ return (a.pos||9999) - (b.pos||9999); });
+      var tw = document.getElementById('tableWrap');
+      if (!persons.length) {
+        tw.innerHTML = '<div class="pq-filter-header"><span class="pq-filter-title">' + gLabel + ' queue</span><button class="pq-filter-clear" onclick="setGenderFilter(null)">✕ Clear filter</button></div><div class="empty">No ' + gLabel.toLowerCase() + ' in queue right now.</div>';
+        return;
+      }
+      var rows = persons.map(function(p) {
+        var posLabel = p.pos == null ? '—' : (p.pos === 1 ? 'Next' : String(p.pos));
+        var isNext = p.pos === 1;
+        var gPip = '<span class="gender-pip ' + (gender === 'male' ? 'male' : 'female') + '">' + (gender === 'male' ? 'M' : 'F') + '</span>';
+        var bookingRef = p.bookingName ? '<div class="pq-booking-ref">Booked under: ' + esc(p.bookingName) + '</div>' : '';
+        var prefStylist = prefStylistLine(p.preferredStylistName);
+        var statusCell = p.staffName
+          ? '<span class="staff-done-tag">✓ ' + esc(p.staffName) + '</span>'
+          : '<button type="button" class="btn-person-done" onclick="openStaffModal(\'' + esc(p.item.id) + '\',' + p.personIdx + ',\'' + esc(p.name) + '\',\'' + (p.gender||'') + '\')">Done</button>';
+        return '<tr>' +
+          '<td><span class="pq-chip ' + chipClass + (isNext ? ' is-next' : '') + '">' + esc(posLabel) + '</span></td>' +
+          '<td><div>' + esc(p.name) + ' ' + gPip + bookingRef + prefStylist + '</div></td>' +
+          '<td>' + esc(p.mobile || '—') + '</td>' +
+          '<td>' + statusCell + '</td>' +
+          '<td>' + actionCell(p.item) + '</td>' +
+        '</tr>';
+      }).join('');
+      tw.innerHTML =
+        '<div class="pq-filter-header">' +
+          '<span class="pq-filter-title">' + gLabel + ' queue — ' + persons.length + ' person' + (persons.length !== 1 ? 's' : '') + '</span>' +
+          '<button class="pq-filter-clear" onclick="setGenderFilter(null)">✕ Clear filter</button>' +
+        '</div>' +
+        '<div class="table-wrap"><table class="pq-table">' +
+          '<thead><tr><th>Queue</th><th>Person</th><th>Mobile</th><th>Status</th><th>Actions</th></tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table></div>';
+    }
+    function updateStaffNext(items) {
+      var el = document.getElementById('staffNextBadge');
+      if (!el) return;
+      var pend = items.filter(function(i) { return i.status === 'pending'; })
+        .sort(function(a,b) { return a.queuePosition - b.queuePosition; });
+      if (!pend.length) {
+        el.textContent = 'Queue empty';
+        return;
+      }
+      var first = pend[0];
+      el.textContent = 'Next: ' + (first.name || 'Guest') + ' · ' + (queueDisplay(first) || '—');
+    }
+    async function load(){
+      var selDate = currentQueueDate();
+      const data = await api(API + '/appointments?preferredDate=' + encodeURIComponent(selDate));
+      const items = (data.data && data.data.appointments) || [];
+      const pending = items.filter(i => i.status === 'pending').sort((a,b)=>a.queuePosition-b.queuePosition);
+      const otherClosed = new Set(['unreachable', 'no_show', 'cancelled']);
+      const completed = items.filter(i => i.status === 'finished').length;
+      const other = items.filter(i => otherClosed.has(i.status)).length;
+      const closed = items.filter(i => i.status !== 'pending').sort(function(a,b){
+        var ta = new Date(a.updatedAt || a.createdAt).getTime();
+        var tb = new Date(b.updatedAt || b.createdAt).getTime();
+        return tb - ta;
+      });
+      const sorted = isTodayBookingsPage ? pending : pending.concat(closed);
+
+      // Keep a live map for guard-checks (e.g. blocking Mark as complete until all Done)
+      appointmentsMap = {};
+      sorted.forEach(function(item){ appointmentsMap[item.id] = item; });
+
+      if (!isTodayBookingsPage) {
+        document.getElementById('statPending').textContent = pending.length;
+        document.getElementById('statCompleted').textContent = completed;
+        document.getElementById('statOther').textContent = other;
+        document.getElementById('statTotal').textContent = items.length;
+      }
+
+      if (!isTodayBookingsPage && document.body.classList.contains('role-admin')) {
+        updateCharts(items);
+      }
+      if (!isTodayBookingsPage) updateStaffNext(items);
+      updateGenderCounts(items);
+
+      var qTitle = document.getElementById('queueCardTitle');
+      if (qTitle) {
+        var baseTitle = isTodayBookingsPage ? 'Today bookings' : (document.body.classList.contains('role-admin') ? 'Queue & appointments' : 'Live queue');
+        qTitle.textContent = baseTitle + ' — ' + selDate;
+      }
+
+      // Gender-filter view overrides normal rendering
+      if (genderFilter) {
+        renderGenderFilteredView(items, genderFilter);
+        return;
+      }
+
+      if (!sorted.length) {
+        document.getElementById('tableWrap').innerHTML = '<div class="empty">No appointments yet.</div>';
+        return;
+      }
+
+      function genderTag(item) {
+        if (!item.gender) return '';
+        var label = item.gender === 'male' ? 'M' : 'F';
+        var cls = item.gender === 'male' ? 'male' : 'female';
+        return ' <span class="gender-pip ' + cls + '">' + label + '</span>';
+      }
+      function prefStylistLine(name) {
+        return name ? '<div class="pq-booking-ref">Preferred stylist: ' + esc(String(name)) + '</div>' : '';
+      }
+      function bookingStylistSummaryHtml(item) {
+        var lines = [];
+        if (item.preferredStylistName) {
+          lines.push('<div style="font-size:11px;color:#6b7280;margin-top:2px;">' + esc(item.name || 'Person 1') + ': ' + esc(item.preferredStylistName) + '</div>');
+        }
+        if (Array.isArray(item.guests)) {
+          item.guests.forEach(function(g, i) {
+            if (g && g.preferredStylistName) {
+              lines.push('<div style="font-size:11px;color:#6b7280;margin-top:2px;">' + esc(g.name || ('Person ' + (i + 2))) + ': ' + esc(g.preferredStylistName) + '</div>');
+            }
+          });
+        }
+        return lines.join('');
+      }
+      function personSubRows(item) {
+        var isPending = item.status === 'pending';
+        var isFinished = item.status === 'finished';
+        if (!isPending && !isFinished) return '';
+        var persons = [];
+        persons.push({ name: item.name, gender: item.gender, staffName: item.staffName, preferredStylistName: item.preferredStylistName, idx: 0 });
+        if (Array.isArray(item.guests)) {
+          item.guests.forEach(function(g, i){
+            persons.push({
+              name: g.name || ('Person ' + (i+2)),
+              gender: g.gender,
+              staffName: g.staffName,
+              preferredStylistName: g.preferredStylistName,
+              idx: i+1
+            });
+          });
+        }
+        // For finished bookings only show sub-rows if at least one person has a staffName
+        if (isFinished && !persons.some(function(p){ return p.staffName; })) return '';
+        return persons.map(function(p){
+          var gPip = p.gender ? '<span class="gender-pip ' + (p.gender === 'male' ? 'male' : 'female') + '">' + (p.gender === 'male' ? 'M' : 'F') + '</span>' : '';
+          var statusCell;
+          if (p.staffName) {
+            statusCell = '<span class="staff-done-tag">✓ ' + esc(p.staffName) + '</span>';
+          } else if (isPending) {
+            statusCell = '<button type="button" class="btn-person-done" onclick="openStaffModal(\'' + esc(item.id) + '\',' + p.idx + ',\'' + esc(p.name) + '\',\'' + (p.gender||'') + '\')">Done</button>';
+          } else {
+            statusCell = '<span style="color:var(--muted);font-size:12px;">—</span>';
+          }
+          return '<tr class="person-row">' +
+            '<td></td>' +
+            '<td colspan="3"><div class="person-cell">↳ <span class="person-name">' + esc(p.name) + '</span>' + gPip + prefStylistLine(p.preferredStylistName) + '</div></td>' +
+            '<td colspan="3"></td>' +
+            '<td>' + statusCell + '</td>' +
+            '<td></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      if (window.innerWidth <= 680) {
+        document.getElementById('tableWrap').innerHTML = '<div class="queue-cards">' +
+          sorted.map(function(item){
+            var pref = item.preferredDate ? esc(String(item.preferredDate)) : '—';
+            var gTag = item.gender ? ' (' + (item.gender === 'male' ? 'M' : 'F') + ')' : '';
+            // Person rows for mobile cards
+            var persons = [{ name: item.name, gender: item.gender, staffName: item.staffName, preferredStylistName: item.preferredStylistName, idx: 0 }];
+            if (Array.isArray(item.guests)) item.guests.forEach(function(g,i){ persons.push({ name: g.name||('Person '+(i+2)), gender: g.gender, staffName: g.staffName, preferredStylistName: g.preferredStylistName, idx: i+1 }); });
+            var personsHtml = '';
+            var isPendingCard = item.status === 'pending';
+            var isFinishedCard = item.status === 'finished';
+            var showPersonRows = isPendingCard || (isFinishedCard && persons.some(function(p){ return p.staffName; }));
+            var prefStylist = bookingStylistSummaryHtml(item) || '—';
+            var prefStylistCard = showPersonRows ? '' :
+              '<div class="queue-card-field"><span class="queue-card-label">Preferred stylist</span><span class="queue-card-value">' + prefStylist + '</span></div>';
+            if (showPersonRows) {
+              personsHtml = '<div style="margin-top:8px;display:flex;flex-direction:column;gap:6px;">' +
+                persons.map(function(p){
+                  var gPip = p.gender ? '<span class="gender-pip ' + (p.gender==='male'?'male':'female') + '">' + (p.gender==='male'?'M':'F') + '</span>' : '';
+                  var btn;
+                  if (p.staffName) {
+                    btn = '<span class="staff-done-tag">✓ ' + esc(p.staffName) + '</span>';
+                  } else if (isPendingCard) {
+                    btn = '<button type="button" class="btn-person-done" onclick="openStaffModal(\'' + esc(item.id) + '\',' + p.idx + ',\'' + esc(p.name) + '\',\'' + (p.gender||'') + '\')">Done</button>';
+                  } else {
+                    btn = '<span style="color:#9ca3af;font-size:12px;">—</span>';
+                  }
+                  return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;background:#f9fafb;border-radius:8px;">' +
+                    (function() {
+                      var stylistNote = p.preferredStylistName ? '<div style="font-size:11px;color:#6b7280;font-weight:500;margin-top:2px;">Stylist: ' + esc(p.preferredStylistName) + '</div>' : '';
+                      return '<div style="min-width:0;"><div style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;">' + esc(p.name) + gPip + '</div>' + stylistNote + '</div>';
+                    })() + btn + '</div>';
+                }).join('') + '</div>';
+            }
+            return '<div class="queue-card-item" data-id="' + esc(item.id) + '">' +
+              '<div class="queue-card-top">' +
+                '<div class="queue-card-name">' + esc((item.name || 'Guest') + gTag) + '</div>' +
+                '<span class="chip ' + chipClass(item) + '">' + esc(queueDisplay(item)) + '</span>' +
+              '</div>' +
+              personsHtml +
+              '<div class="queue-card-grid" style="margin-top:8px;">' +
+                '<div class="queue-card-field"><span class="queue-card-label">Mobile</span><span class="queue-card-value">' + esc(item.mobile || '—') + '</span></div>' +
+                '<div class="queue-card-field"><span class="queue-card-label">Preferred</span><span class="queue-card-value">' + pref + '</span></div>' +
+                prefStylistCard +
+                '<div class="queue-card-field"><span class="queue-card-label">Added by</span><span class="queue-card-value">' + esc(item.createdByDisplay || '—') + '</span></div>' +
+                '<div class="queue-card-field"><span class="queue-card-label">Notes</span><span class="queue-card-value">' + esc(item.notes || '—') + '</span></div>' +
+                '<div class="queue-card-field"><span class="queue-card-label">Booked At</span><span class="queue-card-value">' + esc(new Date(item.createdAt).toLocaleString()) + '</span></div>' +
+              '</div>' +
+              '<div class="queue-card-actions">' + actionCell(item) + '</div>' +
+            '</div>';
+          }).join('') +
+          '</div>';
+        return;
+      }
+
+      document.getElementById('tableWrap').innerHTML = '<div class="table-wrap"><table class="appt-table"><colgroup>' +
+        '<col class="c-q" /><col class="c-name" /><col class="c-mobile" /><col class="c-people" /><col class="c-notes" /><col class="c-pref" /><col class="c-added" /><col class="c-booked" /><col class="c-actions" />' +
+        '</colgroup><thead><tr><th>Queue</th><th>Name</th><th>Mobile</th><th>People</th><th>Notes</th><th>Preferred</th><th>Added by</th><th>Booked At</th><th>Actions</th></tr></thead><tbody>' +
+        sorted.map(function(item){
+          var pref = item.preferredDate ? esc(String(item.preferredDate)) : '—';
+          var prefCell = '<div class="td-text td-pref">' + pref + bookingStylistSummaryHtml(item) + '</div>';
+          var mainRow = '<tr data-id="' + esc(item.id) + '">' +
+            '<td><span class="chip ' + chipClass(item) + '">' + esc(queueDisplay(item)) + '</span></td>' +
+            '<td><div class="td-text">' + esc(item.name) + genderTag(item) + '</div></td>' +
+            '<td><div class="td-text">' + esc(item.mobile) + '</div></td>' +
+            '<td><div class="td-num">' + Number(item.peopleCount || 1) + '</div></td>' +
+            '<td><div class="td-text">' + esc(item.notes || '') + '</div></td>' +
+            '<td>' + prefCell + '</td>' +
+            '<td><div class="td-text" style="font-size:12px;">' + esc(item.createdByDisplay || '—') + '</div></td>' +
+            '<td class="td-booked">' + new Date(item.createdAt).toLocaleString() + '</td>' +
+            '<td>' + actionCell(item) + '</td>' +
+          '</tr>';
+          return mainRow + personSubRows(item);
+        }).join('') + '</tbody></table></div>';
+    }
+    function showBookingFormErr(msg) {
+      var el = document.getElementById('bookingFormErr');
+      if (!el) return;
+      el.textContent = msg;
+      el.style.display = msg ? 'block' : 'none';
+    }
+    function clearBookingFormErr() { showBookingFormErr(''); }
+    function markFieldError(el, hasError) {
+      if (!el) return;
+      el.classList.toggle('field-error', hasError);
+    }
+    async function addAppointment(){
+      clearBookingFormErr();
+      var nameEl   = document.getElementById('name');
+      var mobileEl = document.getElementById('mobile');
+      var nameVal  = (nameEl.value || '').trim();
+      var mobileVal = ((document.getElementById('countryCode').value || '') + (mobileEl.value || '')).trim();
+
+      // Clear previous highlights
+      markFieldError(nameEl, false);
+      markFieldError(mobileEl, false);
+      var nameRow = nameEl.closest('.name-gender-row');
+      if (nameRow) nameRow.classList.remove('field-error');
+      var phoneComp = mobileEl.closest('.phone-composite');
+      if (phoneComp) phoneComp.classList.remove('field-error');
+
+      var errors = [];
+      if (!mobileVal || mobileVal.replace(/\D/g,'').length < 7) {
+        errors.push('Mobile number is required.');
+        if (phoneComp) phoneComp.classList.add('field-error');
+        else markFieldError(mobileEl, true);
+      }
+      if (!nameVal) {
+        errors.push('Customer name is required.');
+        if (nameRow) nameRow.classList.add('field-error');
+        else markFieldError(nameEl, true);
+      }
+      if (!selectedGender) {
+        errors.push('Please select a gender.');
+      }
+      if (errors.length) {
+        showBookingFormErr(errors.join(' '));
+        return;
+      }
+
+      try {
+        var pdEl = document.getElementById('preferredDate');
+        var prefVal = pdEl && pdEl.value ? pdEl.value : '';
+        await api(API + '/appointments', {
+          method:'POST',
+          body: JSON.stringify({
+            name: nameVal,
+            gender: selectedGender,
+            mobile: mobileVal,
+            peopleCount: document.getElementById('peopleCount').value,
+            guests: collectGuests(),
+            preferredStylistName: (document.getElementById('preferredStylistName') || {}).value || '',
+            notes: document.getElementById('notes').value,
+            preferredDate: prefVal
+          })
+        });
+        document.getElementById('name').value = '';
+        document.getElementById('mobile').value = '';
+        document.getElementById('countryCode').value = '+91';
+        setGender('male');
+        var prefStylist = document.getElementById('preferredStylistName');
+        if (prefStylist) prefStylist.value = '';
+        setPeopleCount(1);
+        document.getElementById('notes').value = '';
+        if (preferredDatePicker) preferredDatePicker.setDate(currentQueueDate(), false);
+        else if (pdEl) pdEl.value = currentQueueDate();
+        await load();
+        closeBookingModal();
+      } catch (e) { showBookingFormErr(e.message || 'Failed to create appointment.'); }
+    }
+    async function resolveAppointment(id, status){
+      try {
+        await api(API + '/appointments/' + encodeURIComponent(id) + '/resolve', {
+          method: 'POST',
+          body: JSON.stringify({ status: status })
+        });
+        await load();
+      } catch (e) { alert(e.message); }
+    }
+    async function deleteAppointment(id){
+      if (!confirm('Permanently delete this booking record?')) return;
+      try {
+        await api(API + '/appointments/' + encodeURIComponent(id), { method: 'DELETE' });
+        await load();
+      } catch (e) { alert(e.message); }
+    }
+    document.getElementById('tableWrap').addEventListener('click', function(ev){
+      var r = ev.target.closest('button[data-resolve]');
+      if (r) {
+        ev.preventDefault();
+        var dd = r.closest('details.action-dd');
+        var id = dd && dd.getAttribute('data-appt-id');
+        var resolveStatus = r.getAttribute('data-resolve');
+        // Guard: if trying to mark as finished, ensure all persons have a staff assigned
+        if (resolveStatus === 'finished' && id) {
+          var item = appointmentsMap[id];
+          if (item && item.status === 'pending') {
+            var primaryDone = !!item.staffName;
+            var guestsDone = !item.guests || item.guests.length === 0 ||
+              item.guests.every(function(g){ return !!g.staffName; });
+            if (!primaryDone || !guestsDone) {
+              alert('Please use the "Done" buttons to assign staff for all persons before marking as complete.');
+              return;
+            }
+          }
+        }
+        if (dd) dd.open = false;
+        if (id) resolveAppointment(id, resolveStatus);
+        return;
+      }
+      var d = ev.target.closest('button[data-delete]');
+      if (d) {
+        var dd2 = d.closest('details.action-dd');
+        if (dd2) dd2.open = false;
+        var id2 = dd2 && dd2.getAttribute('data-appt-id');
+        if (id2) deleteAppointment(id2);
+      }
+    });
+    document.addEventListener('click', function(ev){
+      document.querySelectorAll('.action-dd[open]').forEach(function(el){
+        if (!el.contains(ev.target)) el.open = false;
+      });
+    });
+    document.querySelectorAll('.gender-btn[data-gender], .gender-mini-btn[data-gender]').forEach(function(btn){
+      if (!btn.closest('#guestsSection')) {
+        btn.addEventListener('click', function(){ setGender(btn.getAttribute('data-gender')); });
+      }
+    });
+    document.getElementById('peopleMinus').addEventListener('click', function(){ bumpPeople(-1); });
+    document.getElementById('peoplePlus').addEventListener('click', function(){ bumpPeople(1); });
+    var openMenuBtn = document.getElementById('btnOpenSideMenu');
+    if (openMenuBtn) openMenuBtn.addEventListener('click', openSideMenu);
+    var menuBackdrop = document.getElementById('sideMenuBackdrop');
+    if (menuBackdrop) menuBackdrop.addEventListener('click', closeSideMenu);
+    var menuEl = document.getElementById('sideMenu');
+    if (menuEl) {
+      menuEl.addEventListener('click', function(ev){
+        var navTarget = ev.target.closest('a.nav-item,button.nav-item');
+        if (!navTarget) return;
+        if (navTarget.id === 'navNewBooking') {
+          closeSideMenu();
+          openBookingModal();
+          ev.preventDefault();
+          return;
+        }
+        if (navTarget.id === 'sideMenuLogout') {
+          closeSideMenu();
+          portalLogout();
+          ev.preventDefault();
+          return;
+        }
+        if (navTarget.id === 'navGentsFilter') {
+          ev.preventDefault();
+          setGenderFilter('male');
+          return;
+        }
+        if (navTarget.id === 'navLadiesFilter') {
+          ev.preventDefault();
+          setGenderFilter('female');
+          return;
+        }
+        if (navTarget.id === 'navBookingSettings') {
+          ev.preventDefault();
+          openSettingsModal();
+          return;
+        }
+        closeSideMenu();
+      });
+    }
+    initDatePickers();
+    var qToday = document.getElementById('btnQueueDateToday');
+    if (qToday) {
+      qToday.addEventListener('click', function(){
+        if (queueDatePicker) queueDatePicker.setDate(new Date(), false);
+        else {
+          var qdf = document.getElementById('queueDateFilter');
+          if (qdf) qdf.value = todayYmdLocal();
+        }
+        load().catch(function(){});
+      });
+    }
+    document.getElementById('navNewBooking').addEventListener('click', function(){
+      closeSideMenu();
+      openBookingModal();
+    });
+    document.getElementById('bookingModal').addEventListener('click', function(e) {
+      if (e.target === this) closeBookingModal();
+    });
+    document.getElementById('staffModal').addEventListener('click', function(e) {
+      if (e.target === this) closeStaffModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (document.getElementById('settingsModal').classList.contains('is-open')) { closeSettingsModal(); return; }
+        if (document.getElementById('staffModal').classList.contains('is-open')) { closeStaffModal(); return; }
+        if (document.getElementById('bookingModal').classList.contains('is-open')) { closeBookingModal(); return; }
+        closeSideMenu();
+      }
+    });
+    // ── Booking & Time Settings ──
+    function openSettingsModal() {
+      var m = document.getElementById('settingsModal');
+      m.classList.add('is-open');
+      m.setAttribute('aria-hidden', 'false');
+      closeSideMenu();
+      loadPortalSettings();
+    }
+    function closeSettingsModal() {
+      var m = document.getElementById('settingsModal');
+      m.classList.remove('is-open');
+      m.setAttribute('aria-hidden', 'true');
+    }
+    function applySettingsToModal(s) {
+      var chk = document.getElementById('settingBookingClosed');
+      var ta = document.getElementById('settingClosedMessage');
+      var sel = document.getElementById('settingAdvanceLimit');
+      var pill = document.getElementById('bookingStatusPill');
+      var lbl = document.getElementById('closedToggleLbl');
+      var row = document.getElementById('settingClosedMsgRow');
+      if (chk) chk.checked = !!s.bookingClosed;
+      if (ta) ta.value = s.closedMessage || '';
+      if (sel) sel.value = s.advanceBookingLimit || 'any';
+      if (pill) {
+        pill.textContent = s.bookingClosed ? '● Closed' : '● Open';
+        pill.className = 'booking-status-pill ' + (s.bookingClosed ? 'closed' : 'open');
+      }
+      if (lbl) lbl.textContent = s.bookingClosed ? 'On' : 'Off';
+      if (row) row.classList.toggle('visible', !!s.bookingClosed);
+    }
+    async function loadPortalSettings() {
+      try {
+        var data = await api(API + '/settings');
+        applySettingsToModal(data.data || {});
+      } catch (e) {
+        console.error('Could not load settings:', e.message);
+      }
+    }
+    async function savePortalSettings() {
+      try {
+        var s = {
+          bookingClosed: !!document.getElementById('settingBookingClosed').checked,
+          closedMessage: (document.getElementById('settingClosedMessage').value || '').trim(),
+          advanceBookingLimit: document.getElementById('settingAdvanceLimit').value
+        };
+        var data = await api(API + '/settings', {
+          method: 'PUT',
+          body: JSON.stringify(s)
+        });
+        applySettingsToModal(data.data || s);
+        var msg = document.getElementById('settingsSavedMsg');
+        if (msg) { msg.style.display = 'inline'; setTimeout(function(){ msg.style.display = 'none'; }, 2800); }
+      } catch (e) {
+        alert('Error saving settings: ' + e.message);
+      }
+    }
+    // Live toggle for closed message row
+    var closedToggle = document.getElementById('settingBookingClosed');
+    if (closedToggle) {
+      closedToggle.addEventListener('change', function() {
+        var row = document.getElementById('settingClosedMsgRow');
+        if (row) row.classList.toggle('visible', this.checked);
+        var lbl = document.getElementById('closedToggleLbl');
+        if (lbl) lbl.textContent = this.checked ? 'On' : 'Off';
+        var pill = document.getElementById('bookingStatusPill');
+        if (pill) {
+          pill.textContent = this.checked ? '● Closed' : '● Open';
+          pill.className = 'booking-status-pill ' + (this.checked ? 'closed' : 'open');
+        }
+      });
+    }
+    document.getElementById('settingsModal').addEventListener('click', function(e) {
+      if (e.target === this) closeSettingsModal();
+    });
+
+    setPeopleCount(1);
+    ensureSession().then(function(ok){
+      if (!ok) return;
+      load().catch(function(e){ document.getElementById('tableWrap').textContent = e.message; });
+    });
+    var appointmentsMap = {};
+    var aakritiRtTimer = null;
+    if (typeof io !== 'undefined') {
+      var aakritiSocket = io({ path: '/socket.io', transports: ['websocket', 'polling'] });
+      aakritiSocket.on('connect', function(){ aakritiSocket.emit('join_aakriti_watch'); });
+      aakritiSocket.on('aakriti_changed', function(){
+        clearTimeout(aakritiRtTimer);
+        aakritiRtTimer = setTimeout(function(){ load().catch(function(){}); }, 200);
+      });
+    }
+  </script>
+</body>
+</html>

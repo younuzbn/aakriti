@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aakriti - Stylists</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --nav: #23292c;
+      --bg: #f0f2f5;
+      --panel: #ffffff;
+      --border: #e8e8ea;
+      --text: #0a0a0a;
+      --muted: #6b7280;
+      --ui-blue: #2563eb;
+      --ui-blue-soft: #eff6ff;
+      --sidebar-w: 248px;
+    }
+    * { box-sizing: border-box; }
+    html { height: 100%; }
+    body { margin: 0; min-height: 100dvh; display: flex; flex-direction: column; font-family: "DM Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color:var(--text); }
+    .topbar { min-height: 72px; padding: 12px 22px; background: var(--nav); border-bottom: 1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:space-between; gap:16px; position: sticky; top: 0; z-index: 100; }
+    .brand-logo-link { display:flex; align-items:center; line-height:0; text-decoration:none; }
+    .brand-logo-img { height: 56px; width: auto; max-width: min(360px, 65vw); object-fit: contain; object-position: left center; }
+    .mobile-menu-btn { display:none; width:40px; height:40px; border:1px solid rgba(255,255,255,0.26); background:transparent; color:#f5f5f4; border-radius:10px; cursor:pointer; font-size:20px; }
+    .top-link { border:1px solid rgba(255,255,255,0.22); background:transparent; color:#f5f5f4; border-radius:10px; padding:8px 14px; cursor:pointer; font:inherit; font-size:13px; font-weight:500; }
+    .top-link:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color:#fff; }
+    .sidebar-backdrop { display:none; position:fixed; inset:0; background: rgba(15,23,42,0.45); z-index:90; opacity:0; visibility:hidden; transition: opacity .2s ease, visibility .2s ease; }
+    .sidebar-backdrop.is-open { opacity:1; visibility:visible; }
+    .app-wrap { flex:1; display:flex; width:100%; max-width:1600px; margin:0 auto; align-items:flex-start; min-height:0; }
+    .sidebar { width: var(--sidebar-w); background:var(--panel); border-right:1px solid var(--border); padding:20px 14px 24px; display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+    .sidebar-brand { font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); padding:4px 10px 12px; }
+    .nav-item { display:flex; align-items:center; gap:10px; text-decoration:none; color:#374151; padding:11px 12px; border-radius:12px; font-weight:600; font-size:14px; border:none; background:transparent; text-align:left; cursor:pointer; font:inherit; transition: background 0.15s, color 0.15s; }
+    .nav-item:hover { background:#f3f4f6; color:var(--text); }
+    .nav-item.active { background:var(--ui-blue-soft); color:var(--ui-blue); }
+    button.nav-item { width:100%; font-family:inherit; }
+    .nav-item .ni { font-size:16px; width:22px; text-align:center; opacity:.9; }
+    .nav-label { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#9ca3af; padding:16px 10px 6px; }
+    .nav-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      min-width: 22px;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 800;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sidebar-footer { margin-top:auto; padding:16px 10px 4px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); }
+    .sidebar-footer strong { display:block; color:var(--text); font-size:13px; font-weight:700; margin-top:4px; word-break:break-word; }
+    .mobile-only { display:none !important; }
+    .app-main { flex:1; min-width:0; padding:24px; max-width:960px; }
+    .card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; padding:16px; margin-bottom:16px; }
+    h1 { margin:0 0 6px; font-size:26px; }
+    p { margin:0 0 14px; color:#6b7280; }
+    .grid { display:grid; gap:12px; grid-template-columns: 1fr 180px 1fr; }
+    input, select { width:100%; border:1px solid #d1d5db; border-radius:10px; padding:10px 12px; font:inherit; }
+    .btn { border:1px solid #111827; background:#111827; color:#fff; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }
+    .btn-lite { border:1px solid #d1d5db; background:#fff; color:#111827; }
+    .err { display:none; margin-bottom:10px; background:#fef2f2; color:#991b1b; border-radius:10px; padding:10px 12px; }
+    .list { display:grid; gap:10px; }
+    .item { border:1px solid #e5e7eb; border-radius:12px; padding:10px; display:flex; align-items:center; gap:12px; justify-content:space-between; }
+    .item-left { display:flex; align-items:center; gap:10px; min-width:0; }
+    .avatar { width:42px; height:42px; border-radius:999px; background:#e5e7eb; display:flex; align-items:center; justify-content:center; font-weight:700; overflow:hidden; }
+    .avatar img, .avatar video { width:100%; height:100%; object-fit:cover; display:block; }
+    .meta strong { display:block; }
+    .muted { color:#6b7280; font-size:13px; }
+    .section-title { margin:0 0 10px; font-size:16px; }
+    @media (min-width: 901px) {
+      .sidebar { position: fixed; left: 0; top: 72px; width: var(--sidebar-w); height: calc(100vh - 72px); min-height: calc(100vh - 72px); overflow-y: auto; z-index: 25; box-shadow: 1px 0 0 var(--border); }
+      .app-main { margin-left: var(--sidebar-w); }
+    }
+    @media (max-width: 900px) {
+      .mobile-menu-btn { display:inline-flex; align-items:center; justify-content:center; }
+      .topbar .top-link { display:none; }
+      .sidebar-backdrop { display:block; }
+      .sidebar { position: fixed; top: 0; left: 0; width: min(320px, 88vw); height: 100dvh; z-index:100; border-right:1px solid var(--border); box-shadow:10px 0 30px rgba(15,23,42,0.14); transform: translateX(-105%); transition: transform .2s ease; padding:14px 12px 16px; overflow-y:auto; }
+      .sidebar.is-open { transform: translateX(0); }
+      .mobile-only { display:flex !important; }
+      .app-main { padding:20px 14px 30px; margin-left: 0 !important; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button type="button" class="mobile-menu-btn" id="btnOpenSideMenu" aria-label="Open menu">☰</button>
+    <a class="brand-logo-link" href="/aakriti/dashboard"><img class="brand-logo-img" src="/aakriti-logo.png" alt="Aakriti" /></a>
+    <button class="top-link" type="button" onclick="portalLogout()">Log out</button>
+  </header>
+
+  <div class="sidebar-backdrop" id="sideMenuBackdrop" aria-hidden="true"></div>
+
+  <div class="app-wrap">
+    <aside class="sidebar" id="sideMenu" aria-label="Main navigation">
+      <div class="sidebar-brand">Salon</div>
+      <a class="nav-item" href="/aakriti/dashboard"><span class="ni" aria-hidden="true">▣</span> Dashboard</a>
+      <a class="nav-item" href="/aakriti/dashboard/today-bookings"><span class="ni" aria-hidden="true">☰</span> Today bookings</a>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'"><span class="ni" aria-hidden="true">＋</span> New booking</button>
+      <div class="nav-label">Insights</div>
+      <a class="nav-item" href="/aakriti/dashboard/analytics"><span class="ni" aria-hidden="true">▤</span> Month analytics</a>
+      <a class="nav-item" href="/aakriti/dashboard/customers"><span class="ni" aria-hidden="true">◎</span> Customers</a>
+      <a class="nav-item" href="/aakriti/dashboard/reports"><span class="ni" aria-hidden="true">▦</span> Reports</a>
+      <div class="nav-label">Queue filters</div>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'">
+        <span class="ni" aria-hidden="true">♂</span> Gents
+        <span class="nav-badge" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'">
+        <span class="ni" aria-hidden="true">♀</span> Ladies
+        <span class="nav-badge" aria-hidden="true"></span>
+      </button>
+      <div class="nav-label">Management</div>
+      <a class="nav-item active" href="/aakriti/dashboard/stylists"><span class="ni" aria-hidden="true">✂</span> Stylists</a>
+      <a class="nav-item" href="/aakriti/dashboard/staff"><span class="ni" aria-hidden="true">◉</span> Team &amp; staff</a>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'"><span class="ni" aria-hidden="true">⚙</span> Booking &amp; Time Settings</button>
+      <div class="sidebar-footer">Signed in as<strong id="sidebarUser">—</strong></div>
+      <button type="button" class="nav-item mobile-only" id="sideMenuLogout"><span class="ni" aria-hidden="true">↩</span> Log out</button>
+    </aside>
+    <main class="app-main">
+      <h1>Stylists</h1>
+      <p>Add male/female stylists for booking completion.</p>
+      <div id="err" class="err"></div>
+      <section class="card">
+        <h2 class="section-title">Add stylist</h2>
+        <div class="grid">
+          <input id="stylistName" placeholder="Name" />
+          <select id="stylistGender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          <input id="stylistMedia" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.webm,.mp4,image/*,video/webm,video/mp4" />
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn" onclick="addStylist()">Add stylist</button>
+        </div>
+      </section>
+      <section class="card">
+        <h2 class="section-title">Male stylists</h2>
+        <div id="maleList" class="list"></div>
+      </section>
+      <section class="card">
+        <h2 class="section-title">Female stylists</h2>
+        <div id="femaleList" class="list"></div>
+      </section>
+    </main>
+  </div>
+  <script>
+    var API = '/api/aakriti/portal';
+    function authHeaders(){ var t = localStorage.getItem('aakritiPortalToken'); return { Authorization: 'Bearer ' + t }; }
+    function portalLogout(){
+      localStorage.removeItem('aakritiPortalToken');
+      localStorage.removeItem('aakritiPortalRole');
+      localStorage.removeItem('aakritiPortalUsername');
+      var ret = localStorage.getItem('aakritiPortalReturnLogin');
+      localStorage.removeItem('aakritiPortalReturnLogin');
+      location.href = ret || '/aakriti/login';
+    }
+    function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function showErr(msg){ var e = document.getElementById('err'); e.textContent = msg || ''; e.style.display = msg ? 'block' : 'none'; }
+    async function api(path, opts){
+      var o = opts || {};
+      var res = await fetch(path, Object.assign({}, o, { headers: Object.assign({}, authHeaders(), o.headers || {}) }));
+      var j = await res.json().catch(function(){ return {}; });
+      if (res.status === 401) { portalLogout(); throw new Error('Session expired'); }
+      if (!res.ok) throw new Error(j.message || 'Request failed');
+      return j;
+    }
+    function renderList(targetId, rows){
+      var el = document.getElementById(targetId);
+      if (!rows.length) { el.innerHTML = '<div class="muted">No stylists yet.</div>'; return; }
+      el.innerHTML = rows.map(function(s){
+        var media = '';
+        if (s.mediaUrl && s.mediaKind === 'video') media = '<video src="' + esc(s.mediaUrl) + '" muted playsinline></video>';
+        else if (s.mediaUrl) media = '<img src="' + esc(s.mediaUrl) + '" alt="' + esc(s.name) + '" />';
+        else media = esc((s.name || '?').charAt(0).toUpperCase());
+        return '<div class="item"><div class="item-left">' +
+          '<div class="avatar">' + media + '</div>' +
+          '<div class="meta"><strong>' + esc(s.name) + '</strong><div class="muted">' + esc(s.gender) + '</div></div>' +
+          '</div><button class="btn btn-lite" onclick="removeStylist(\'' + esc(s.id) + '\')">Remove</button></div>';
+      }).join('');
+    }
+    async function loadStylists(){
+      try {
+        showErr('');
+        var j = await api(API + '/stylists');
+        var list = (j.data && j.data.stylists) || [];
+        renderList('maleList', list.filter(function(x){ return x.gender === 'male'; }));
+        renderList('femaleList', list.filter(function(x){ return x.gender === 'female'; }));
+      } catch (e) { showErr(e.message || 'Failed to load stylists'); }
+    }
+    async function addStylist(){
+      try {
+        showErr('');
+        var fd = new FormData();
+        fd.append('name', document.getElementById('stylistName').value || '');
+        fd.append('gender', document.getElementById('stylistGender').value || '');
+        var f = document.getElementById('stylistMedia').files[0];
+        if (f) fd.append('media', f);
+        await api(API + '/stylists', { method: 'POST', body: fd });
+        document.getElementById('stylistName').value = '';
+        document.getElementById('stylistMedia').value = '';
+        await loadStylists();
+      } catch (e) { showErr(e.message || 'Failed to add stylist'); }
+    }
+    async function removeStylist(id){
+      if (!confirm('Remove this stylist?')) return;
+      try {
+        showErr('');
+        await api(API + '/stylists/' + encodeURIComponent(id), { method: 'DELETE' });
+        await loadStylists();
+      } catch (e) { showErr(e.message || 'Failed to remove stylist'); }
+    }
+    function openSideMenu() {
+      var menu = document.getElementById('sideMenu');
+      var back = document.getElementById('sideMenuBackdrop');
+      if (!menu || !back) return;
+      menu.classList.add('is-open');
+      back.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSideMenu() {
+      var menu = document.getElementById('sideMenu');
+      var back = document.getElementById('sideMenuBackdrop');
+      if (!menu || !back) return;
+      menu.classList.remove('is-open');
+      back.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('btnOpenSideMenu').addEventListener('click', openSideMenu);
+    document.getElementById('sideMenuBackdrop').addEventListener('click', closeSideMenu);
+    document.getElementById('sideMenu').addEventListener('click', function(ev) {
+      var navTarget = ev.target.closest('a.nav-item, button.nav-item');
+      if (!navTarget) return;
+      if (navTarget.id === 'sideMenuLogout') { closeSideMenu(); portalLogout(); return; }
+      closeSideMenu();
+    });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSideMenu(); });
+    async function ensureAdmin(){
+      var t = localStorage.getItem('aakritiPortalToken');
+      if (!t) { location.href = localStorage.getItem('aakritiPortalReturnLogin') || '/aakriti/login'; return false; }
+      var r = await fetch(API + '/me', { headers: Object.assign({ 'Content-Type': 'application/json' }, authHeaders()) });
+      var j = await r.json().catch(function(){ return {}; });
+      if (!r.ok || j.status !== 'success' || j.data.role !== 'admin') { location.href = '/aakriti/dashboard'; return false; }
+      var su = document.getElementById('sidebarUser');
+      if (su) su.textContent = j.data.username || 'Admin';
+      return true;
+    }
+    ensureAdmin().then(function(ok){ if (ok) loadStylists(); });
+  </script>
+</body>
+</html>

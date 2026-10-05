@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aakriti — Team &amp; staff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --nav: #23292c;
+      --bg: #f0f2f5;
+      --panel: #ffffff;
+      --border: #e8e8ea;
+      --input-border: #d4d4d4;
+      --text: #0a0a0a;
+      --muted: #6b7280;
+      --primary: #1a1f24;
+      --primary-hover: #12161a;
+      --accent-ring: rgba(26,31,36,0.2);
+      --ui-blue: #2563eb;
+      --ui-blue-soft: #eff6ff;
+      --sidebar-w: 248px;
+    }
+    * { box-sizing: border-box; }
+    html { height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      font-family: "DM Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    /* ── Topbar ── */
+    .topbar {
+      min-height: 72px;
+      padding: 12px 22px;
+      background: #23292c;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-logo-link { display: flex; align-items: center; line-height: 0; text-decoration: none; }
+    .brand-logo-img { height: 56px; width: auto; max-width: min(360px, 65vw); display: block; object-fit: contain; object-position: left center; }
+    .top-link {
+      text-decoration: none;
+      color: #f5f5f4;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 10px;
+      padding: 8px 14px;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+    .top-link:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.08); color: #fff; }
+    .mobile-menu-btn {
+      display: none;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(255,255,255,0.26);
+      background: transparent;
+      border-radius: 10px;
+      color: #f5f5f4;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .mobile-menu-btn:hover { background: rgba(255,255,255,0.08); }
+    .mobile-only { display: none !important; }
+    /* ── Sidebar backdrop ── */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      top: 72px; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 40;
+    }
+    .sidebar-backdrop.is-open { display: block; }
+    /* ── Layout ── */
+    .app-wrap { flex: 1; display: flex; width: 100%; max-width: 1600px; margin: 0 auto; }
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 20px 14px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sidebar-brand { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding: 4px 10px 12px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover { background: #f3f4f6; color: var(--text); }
+    .nav-item.active { background: var(--ui-blue-soft); color: var(--ui-blue); }
+    .nav-item .ni { font-size: 16px; width: 22px; text-align: center; opacity: 0.9; }
+    .nav-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9ca3af; padding: 16px 10px 6px; }
+    .nav-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      min-width: 22px;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 800;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 10px 4px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .sidebar-footer strong { display: block; color: var(--text); font-size: 13px; font-weight: 700; margin-top: 4px; word-break: break-word; }
+    .app-main { flex: 1; min-width: 0; padding: 28px 24px 48px; }
+    @media (min-width: 901px) {
+      .sidebar {
+        position: fixed;
+        left: 0; top: 72px;
+        width: var(--sidebar-w);
+        height: calc(100vh - 72px);
+        min-height: calc(100vh - 72px);
+        overflow-y: auto;
+        z-index: 25;
+        box-shadow: 1px 0 0 var(--border);
+      }
+      .app-main { margin-left: var(--sidebar-w); }
+    }
+    @media (max-width: 900px) {
+      .mobile-menu-btn { display: flex; }
+      .sidebar {
+        position: fixed;
+        left: 0; top: 72px;
+        height: calc(100dvh - 72px);
+        width: min(var(--sidebar-w), 85vw);
+        transform: translateX(-110%);
+        transition: transform 0.24s ease;
+        z-index: 50;
+        overflow-y: auto;
+      }
+      .sidebar.is-open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.15); }
+      .app-main { margin-left: 0 !important; padding: 20px 16px 40px; }
+      .mobile-only { display: flex !important; }
+      .topbar .top-link { display: none; }
+    }
+    /* ── Page content ── */
+    .page-hero { margin-bottom: 24px; }
+    .page-hero h1 { margin: 0 0 6px; font-size: clamp(1.4rem, 4vw, 1.75rem); font-weight: 800; letter-spacing: -0.03em; }
+    .page-hero p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+    .content-wrap { max-width: 680px; }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 1px 3px rgba(12,13,14,0.05), 0 8px 32px rgba(12,13,14,0.06);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .card-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
+    }
+    .card-head h2 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+    .card-head .sub { margin: 5px 0 0; font-size: 13px; color: var(--muted); }
+    .card-body { padding: 20px; }
+    .form-stack { display: flex; flex-direction: column; gap: 16px; }
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    input {
+      width: 100%;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 15px;
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--accent-ring); }
+    .role-note {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 10px 12px;
+      background: #f6f7f8;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin: 0;
+    }
+    .btn {
+      cursor: pointer;
+      background: var(--primary);
+      border: 1px solid var(--primary);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px 22px;
+      border-radius: 12px;
+      width: 100%;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+    .btn-lite {
+      background: #fff;
+      color: var(--text);
+      border-color: var(--input-border);
+      font-weight: 600;
+    }
+    .btn-lite:hover { border-color: var(--primary); color: var(--primary); }
+    .mini-btn { padding: 6px 10px; font-size: 12px; border-radius: 8px; width: auto; }
+    .table-wrap { overflow-x: auto; }
+    table.appt-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { border-bottom: 1px solid var(--border); text-align: left; padding: 12px 10px; }
+    th { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; background: #fafbfc; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(26,31,36,0.03); }
+    .muted { color: var(--muted); font-size: 14px; }
+    #err {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fef2f2;
+      color: #991b1b;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    /* Keep side-menu shell identical to dashboard */
+    .sidebar-backdrop {
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 90;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .sidebar-backdrop.is-open { display: block; opacity: 1; visibility: visible; }
+    @media (max-width: 900px) {
+      .app-wrap { flex-direction: column; }
+      .sidebar {
+        top: 0;
+        width: min(320px, 88vw);
+        height: 100dvh;
+        z-index: 100;
+        box-shadow: 10px 0 30px rgba(15, 23, 42, 0.14);
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+        padding: 14px 12px 16px;
+        overflow-x: hidden;
+      }
+      .sidebar.is-open { transform: translateX(0); }
+      .app-main { padding: 18px 14px 30px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button type="button" class="mobile-menu-btn" id="btnOpenSideMenu" aria-label="Open menu">☰</button>
+    <a class="brand-logo-link" href="/aakriti/dashboard" aria-label="Aakriti">
+      <img class="brand-logo-img" src="/aakriti-logo.png" alt="Aakriti Boutique &amp; Makeup Studio" />
+    </a>
+    <button type="button" class="top-link" onclick="portalLogout()">Log out</button>
+  </header>
+
+  <div class="sidebar-backdrop" id="sideMenuBackdrop" aria-hidden="true"></div>
+
+  <div class="app-wrap">
+    <aside class="sidebar" id="sideMenu" aria-label="Main navigation">
+      <div class="sidebar-brand">Salon</div>
+      <a class="nav-item" href="/aakriti/dashboard"><span class="ni" aria-hidden="true">▣</span> Dashboard</a>
+      <a class="nav-item" href="/aakriti/dashboard/today-bookings"><span class="ni" aria-hidden="true">☰</span> Today bookings</a>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'"><span class="ni" aria-hidden="true">＋</span> New booking</button>
+      <div class="nav-label">Insights</div>
+      <a class="nav-item" href="/aakriti/dashboard/analytics"><span class="ni" aria-hidden="true">▤</span> Month analytics</a>
+      <a class="nav-item" href="/aakriti/dashboard/customers"><span class="ni" aria-hidden="true">◎</span> Customers</a>
+      <a class="nav-item" href="/aakriti/dashboard/reports"><span class="ni" aria-hidden="true">▦</span> Reports</a>
+      <div class="nav-label">Queue filters</div>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'">
+        <span class="ni" aria-hidden="true">♂</span> Gents
+        <span class="nav-badge" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'">
+        <span class="ni" aria-hidden="true">♀</span> Ladies
+        <span class="nav-badge" aria-hidden="true"></span>
+      </button>
+      <div class="nav-label">Management</div>
+      <a class="nav-item" href="/aakriti/dashboard/stylists"><span class="ni" aria-hidden="true">✂</span> Stylists</a>
+      <a class="nav-item active" href="/aakriti/dashboard/staff"><span class="ni" aria-hidden="true">◉</span> Team &amp; staff</a>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'"><span class="ni" aria-hidden="true">⚙</span> Booking &amp; Time Settings</button>
+      <div class="sidebar-footer">
+        Signed in as
+        <strong id="sidebarUser">—</strong>
+      </div>
+      <button type="button" class="nav-item mobile-only" id="sideMenuLogout">
+        <span class="ni" aria-hidden="true">↩</span> Log out
+      </button>
+    </aside>
+
+    <div class="app-main">
+      <div class="content-wrap">
+        <div id="err"></div>
+        <div class="page-hero">
+          <h1>Team &amp; staff</h1>
+          <p>Create staff logins for the queue dashboard. Only admins can access this page.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Add staff account</h2>
+            <p class="sub">New accounts can sign in from the same staff login page.</p>
+          </div>
+          <div class="card-body">
+            <div class="form-stack">
+              <div class="field">
+                <label for="newUserUsername">Username</label>
+                <input id="newUserUsername" autocomplete="off" placeholder="e.g. priya" />
+              </div>
+              <div class="field">
+                <label for="newUserPassword">Password</label>
+                <input id="newUserPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" />
+              </div>
+              <p class="role-note">Role: <strong>Staff</strong> — staff can manage the queue but cannot add accounts.</p>
+              <button type="button" class="btn" onclick="createStaffUser()">Create staff account</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Portal accounts</h2>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div id="teamList" class="muted" style="padding:20px;">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var q = new URLSearchParams(location.search);
+      var st = q.get('setToken');
+      var ret = q.get('returnLogin');
+      if (st) {
+        localStorage.setItem('aakritiPortalToken', st);
+        if (ret) localStorage.setItem('aakritiPortalReturnLogin', ret);
+        q.delete('setToken');
+        q.delete('returnLogin');
+        var qs = q.toString();
+        history.replaceState({}, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+      }
+    })();
+    var API = '/api/aakriti/portal';
+    function authHeaders() {
+      var t = localStorage.getItem('aakritiPortalToken');
+      return { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' };
+    }
+    function portalLogout() {
+      localStorage.removeItem('aakritiPortalToken');
+      localStorage.removeItem('aakritiPortalRole');
+      localStorage.removeItem('aakritiPortalUsername');
+      var ret = localStorage.getItem('aakritiPortalReturnLogin');
+      localStorage.removeItem('aakritiPortalReturnLogin');
+      window.location.href = ret || '/aakriti/login';
+    }
+    async function api(path, opts) {
+      var o = opts || {};
+      var h = Object.assign({}, authHeaders(), o.headers || {});
+      var res = await fetch(path, Object.assign({}, o, { headers: h }));
+      var json = await res.json().catch(function(){ return {}; });
+      if (res.status === 401) { portalLogout(); throw new Error('Session expired'); }
+      if (!res.ok) throw new Error(json.message || 'Request failed');
+      return json;
+    }
+    function showErr(msg) {
+      var el = document.getElementById('err');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+    function openSideMenu() {
+      document.getElementById('sideMenu').classList.add('is-open');
+      document.getElementById('sideMenuBackdrop').classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSideMenu() {
+      document.getElementById('sideMenu').classList.remove('is-open');
+      document.getElementById('sideMenuBackdrop').classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('btnOpenSideMenu').addEventListener('click', openSideMenu);
+    document.getElementById('sideMenuBackdrop').addEventListener('click', closeSideMenu);
+    document.getElementById('sideMenu').addEventListener('click', function(ev) {
+      var navTarget = ev.target.closest('a.nav-item, button.nav-item');
+      if (!navTarget) return;
+      if (navTarget.id === 'sideMenuLogout') { closeSideMenu(); portalLogout(); return; }
+      closeSideMenu();
+    });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSideMenu(); });
+    function esc(s) {
+      return (s == null ? '' : String(s))
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    async function loadTeam() {
+      var el = document.getElementById('teamList');
+      try {
+        var data = await api(API + '/users');
+        var rows = (data.data && data.data.users) || [];
+        if (!rows.length) {
+          el.innerHTML = '<span class="muted" style="padding:20px;display:block;">No portal users yet.</span>';
+          return;
+        }
+        el.innerHTML =
+          '<div class="table-wrap"><table class="appt-table"><thead><tr><th>Username</th><th>Role</th><th></th></tr></thead><tbody>' +
+          rows.map(function(u) {
+            var removeCell = u.role === 'admin'
+              ? ''
+              : '<button type="button" class="btn btn-lite mini-btn" data-del-user="' + esc(u.id) + '">Remove</button>';
+            return '<tr><td style="font-weight:600;">' + esc(u.username) + '</td><td style="color:var(--muted);font-size:13px;">' + esc(u.role) + '</td><td style="text-align:right;">' + removeCell + '</td></tr>';
+          }).join('') +
+          '</tbody></table></div>';
+        el.querySelectorAll('[data-del-user]').forEach(function(b) {
+          b.addEventListener('click', function() {
+            deletePortalUser(b.getAttribute('data-del-user'));
+          });
+        });
+      } catch (e) {
+        el.innerHTML = '<span style="padding:20px;display:block;color:#991b1b;">' + esc(e.message || 'Failed to load team') + '</span>';
+      }
+    }
+    async function createStaffUser() {
+      document.getElementById('err').style.display = 'none';
+      try {
+        await api(API + '/users', {
+          method: 'POST',
+          body: JSON.stringify({
+            username: document.getElementById('newUserUsername').value,
+            password: document.getElementById('newUserPassword').value,
+            role: 'staff'
+          })
+        });
+        document.getElementById('newUserUsername').value = '';
+        document.getElementById('newUserPassword').value = '';
+        await loadTeam();
+      } catch (e) {
+        showErr(e.message || 'Could not create user');
+      }
+    }
+    async function deletePortalUser(id) {
+      if (!confirm('Remove this user?')) return;
+      document.getElementById('err').style.display = 'none';
+      try {
+        await api(API + '/users/' + encodeURIComponent(id), { method: 'DELETE' });
+        await loadTeam();
+      } catch (e) {
+        showErr(e.message || 'Could not remove user');
+      }
+    }
+    async function ensureAdminSession() {
+      var t = localStorage.getItem('aakritiPortalToken');
+      if (!t) {
+        window.location.href = localStorage.getItem('aakritiPortalReturnLogin') || '/aakriti/login';
+        return false;
+      }
+      var r = await fetch(API + '/me', { headers: authHeaders() });
+      var j = await r.json().catch(function(){ return {}; });
+      if (!r.ok || j.status !== 'success') { portalLogout(); return false; }
+      if (j.data.role !== 'admin') { window.location.replace('/aakriti/dashboard'); return false; }
+      var su = document.getElementById('sidebarUser');
+      if (su) su.textContent = j.data.username || 'Admin';
+      return true;
+    }
+    ensureAdminSession().then(function(ok) {
+      if (!ok) return;
+      loadTeam();
+    });
+  </script>
+</body>
+</html>

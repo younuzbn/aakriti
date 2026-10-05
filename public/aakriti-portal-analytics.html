@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aakriti — Month analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --nav: #23292c;
+      --bg: #f0f2f5;
+      --panel: #ffffff;
+      --border: #e8e8ea;
+      --input-border: #d4d4d4;
+      --text: #0a0a0a;
+      --muted: #6b7280;
+      --ui-blue: #2563eb;
+      --ui-blue-hover: #1d4ed8;
+      --ui-blue-soft: #eff6ff;
+      --sidebar-w: 248px;
+    }
+    * { box-sizing: border-box; }
+    html { height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      font-family: "DM Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+    body.role-staff .admin-only { display: none !important; }
+    body.role-admin .staff-only { display: none !important; }
+    .topbar {
+      min-height: 72px;
+      padding: 12px 22px;
+      background: #23292c;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-logo-link { display: flex; align-items: center; line-height: 0; text-decoration: none; }
+    .brand-logo-img { height: 56px; width: auto; max-width: min(360px, 65vw); display: block; object-fit: contain; }
+    .top-link {
+      text-decoration: none;
+      color: #f5f5f4;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
+      padding: 8px 14px;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+    }
+    .top-link:hover { border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .mobile-menu-btn {
+      display: none;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(255,255,255,0.26);
+      background: transparent;
+      border-radius: 10px;
+      color: #f5f5f4;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .mobile-menu-btn:hover { background: rgba(255,255,255,0.08); }
+    .mobile-only { display: none !important; }
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      top: 72px; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 40;
+    }
+    .sidebar-backdrop.is-open { display: block; }
+    .app-wrap { flex: 1; display: flex; align-items: flex-start; min-height: 0; width: 100%; max-width: 1600px; margin: 0 auto; }
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 20px 14px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sidebar-brand {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 4px 10px 12px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      text-decoration: none;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font: inherit;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover { background: #f3f4f6; color: var(--text); }
+    .nav-item.active { background: var(--ui-blue-soft); color: var(--ui-blue); }
+    .nav-item .ni { font-size: 16px; width: 22px; text-align: center; opacity: 0.9; }
+    .nav-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9ca3af; padding: 16px 10px 6px; }
+    .nav-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      min-width: 22px;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 10px 4px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .sidebar-footer strong { display: block; color: var(--text); font-size: 13px; font-weight: 700; margin-top: 4px; word-break: break-word; }
+    .app-main { flex: 1; min-width: 0; padding: 22px 20px 36px; overflow-x: hidden; }
+    @media (min-width: 901px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 72px;
+        width: var(--sidebar-w);
+        height: calc(100vh - 72px);
+        min-height: calc(100vh - 72px);
+        overflow-y: auto;
+        z-index: 25;
+        box-shadow: 1px 0 0 var(--border);
+      }
+      .app-main { margin-left: var(--sidebar-w); }
+    }
+    @media (max-width: 900px) {
+      .mobile-menu-btn { display: flex; }
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 72px;
+        height: calc(100dvh - 72px);
+        width: min(var(--sidebar-w), 85vw);
+        transform: translateX(-110%);
+        transition: transform 0.24s ease;
+        z-index: 50;
+        overflow-y: auto;
+      }
+      .sidebar.is-open {
+        transform: translateX(0);
+        box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+      }
+      .app-main { margin-left: 0 !important; }
+      .mobile-only { display: flex !important; }
+      .topbar .top-link { display: none; }
+    }
+    .main-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .main-head h1 { margin: 0 0 6px; font-size: clamp(1.5rem, 4vw, 1.85rem); font-weight: 800; letter-spacing: -0.03em; }
+    .main-head p { margin: 0; font-size: 15px; color: var(--muted); max-width: 36rem; line-height: 1.5; }
+
+    /* Filter panel (shared pattern with Reports) */
+    .filter-panel {
+      background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px 22px;
+      margin-bottom: 24px;
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.04),
+        0 4px 24px rgba(15, 23, 42, 0.04);
+    }
+    .filter-panel-title {
+      margin: 0 0 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .filter-panel-inner {
+      display: grid;
+      grid-template-columns: minmax(130px, 1fr) minmax(160px, 1.2fr) auto;
+      gap: 16px 20px;
+      align-items: end;
+    }
+    @media (max-width: 640px) {
+      .filter-panel-inner { grid-template-columns: 1fr; }
+    }
+    .filter-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      letter-spacing: 0.01em;
+    }
+    .field-input,
+    .field-select {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .field-select {
+      cursor: pointer;
+      padding-right: 40px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 18px;
+    }
+    .field-input::placeholder { color: #94a3b8; font-weight: 400; }
+    .field-input:hover,
+    .field-select:hover { border-color: #cbd5e1; }
+    .field-input:focus,
+    .field-select:focus {
+      outline: none;
+      border-color: var(--ui-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    }
+    .field-label--spacer {
+      visibility: hidden;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.25;
+      min-height: 1.25em;
+      user-select: none;
+    }
+    .btn-primary {
+      height: 46px;
+      padding: 0 24px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      transition: filter 0.15s ease, transform 0.1s ease;
+      white-space: nowrap;
+    }
+    .btn-primary:hover { filter: brightness(1.06); }
+    .btn-primary:active { transform: translateY(1px); }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 900px) {
+      .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+    .stat-card .k {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .stat-card .v { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
+    .chart-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+    .chart-card-header {
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .chart-card-header h3 { margin: 0; font-size: 16px; font-weight: 800; }
+    .chart-card-header p { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+    .chart-card-body { padding: 0 16px 20px; }
+    .bar-chart-root { width: 100%; overflow-x: auto; padding-top: 8px; }
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      gap: 4px;
+      width: max-content;
+      min-width: 100%;
+    }
+    .bar-col {
+      flex: 0 0 auto;
+      width: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .bar-val { font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums; color: #0f172a; min-height: 14px; }
+    .bar-track {
+      width: 100%;
+      height: 140px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 4px 2px 0;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0;
+      box-sizing: border-box;
+    }
+    .bar-chart .bar {
+      width: 100%;
+      border-radius: 6px 6px 4px 4px;
+      background: linear-gradient(180deg, #60a5fa 0%, #2563eb 55%, #1d4ed8 100%);
+      min-height: 4px;
+    }
+    .bar-x {
+      font-size: 11px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #64748b;
+      text-align: center;
+      min-width: 1.75rem;
+      line-height: 1.2;
+    }
+    .muted { color: var(--muted); }
+    .err { padding: 14px; border-radius: 12px; background: #fef2f2; color: #991b1b; font-size: 14px; display: none; margin-bottom: 16px; }
+    /* Keep side-menu shell identical to dashboard */
+    .sidebar-backdrop {
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 90;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    .sidebar-backdrop.is-open { display: block; opacity: 1; visibility: visible; }
+    @media (max-width: 900px) {
+      .app-wrap { flex-direction: column; }
+      .sidebar {
+        top: 0;
+        width: min(320px, 88vw);
+        height: 100dvh;
+        z-index: 100;
+        box-shadow: 10px 0 30px rgba(15, 23, 42, 0.14);
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+        padding: 14px 12px 16px;
+        overflow-x: hidden;
+      }
+      .sidebar.is-open { transform: translateX(0); }
+      .app-main { padding: 18px 14px 30px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button type="button" class="mobile-menu-btn" id="btnOpenSideMenu" aria-label="Open menu">☰</button>
+    <a class="brand-logo-link" href="/aakriti/dashboard" aria-label="Aakriti">
+      <img class="brand-logo-img" src="/aakriti-logo.png" alt="Aakriti Boutique &amp; Makeup Studio" />
+    </a>
+    <button type="button" class="top-link" onclick="portalLogout()">Log out</button>
+  </header>
+
+  <div class="sidebar-backdrop" id="sideMenuBackdrop" aria-hidden="true"></div>
+
+  <div class="app-wrap">
+    <aside class="sidebar" id="sideMenu" aria-label="Main navigation">
+      <div class="sidebar-brand">Salon</div>
+      <a class="nav-item" href="/aakriti/dashboard"><span class="ni" aria-hidden="true">▣</span> Dashboard</a>
+      <a class="nav-item" href="/aakriti/dashboard/today-bookings"><span class="ni" aria-hidden="true">☰</span> Today bookings</a>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'"><span class="ni" aria-hidden="true">＋</span> New booking</button>
+      <div class="nav-label">Insights</div>
+      <a class="nav-item active" href="/aakriti/dashboard/analytics"><span class="ni" aria-hidden="true">▤</span> Month analytics</a>
+      <a class="nav-item" href="/aakriti/dashboard/customers"><span class="ni" aria-hidden="true">◎</span> Customers</a>
+      <a class="nav-item" href="/aakriti/dashboard/reports"><span class="ni" aria-hidden="true">▦</span> Reports</a>
+      <div class="nav-label">Queue filters</div>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'">
+        <span class="ni" aria-hidden="true">♂</span> Gents
+        <span class="nav-badge" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="nav-item" onclick="location.href='/aakriti/dashboard'">
+        <span class="ni" aria-hidden="true">♀</span> Ladies
+        <span class="nav-badge" aria-hidden="true"></span>
+      </button>
+      <div class="nav-label admin-only">Management</div>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/stylists"><span class="ni" aria-hidden="true">✂</span> Stylists</a>
+      <a class="nav-item admin-only" href="/aakriti/dashboard/staff"><span class="ni" aria-hidden="true">◉</span> Team &amp; staff</a>
+      <button type="button" class="nav-item admin-only" onclick="location.href='/aakriti/dashboard'"><span class="ni" aria-hidden="true">⚙</span> Booking &amp; Time Settings</button>
+      <div class="nav-label staff-only">Your shift</div>
+      <div class="nav-item staff-only" style="cursor:default;background:#f9fafb;"><span class="ni" aria-hidden="true">✓</span> Queue access</div>
+      <div class="sidebar-footer">
+        Signed in as
+        <strong id="sidebarUser">—</strong>
+      </div>
+      <button type="button" class="nav-item mobile-only" id="sideMenuLogout">
+        <span class="ni" aria-hidden="true">↩</span> Log out
+      </button>
+    </aside>
+
+    <div class="app-main">
+      <header class="main-head">
+        <div>
+          <h1>Month analytics</h1>
+        </div>
+      </header>
+
+      <div id="err" class="err"></div>
+
+      <section class="filter-panel" aria-label="Month range">
+        <h2 class="filter-panel-title">Date range</h2>
+        <div class="filter-panel-inner">
+          <div class="filter-field">
+            <label class="field-label" for="selYear">Year</label>
+            <select id="selYear" class="field-input field-select"></select>
+          </div>
+          <div class="filter-field">
+            <label class="field-label" for="selMonth">Month</label>
+            <select id="selMonth" class="field-input field-select"></select>
+          </div>
+          <div class="filter-field filter-field--action">
+            <span class="field-label field-label--spacer" aria-hidden="true">.</span>
+            <button type="button" class="btn-primary" onclick="loadAnalytics()" aria-label="Load month analytics">Load</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="k">Total bookings</div>
+          <div class="v" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="k">Customer (online)</div>
+          <div class="v" id="statCustomer">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="k">Portal admin</div>
+          <div class="v" id="statAdmin">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="k">Portal staff</div>
+          <div class="v" id="statStaff">0</div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <h3 id="chartTitle">Bookings by day</h3>
+          <p class="muted">Each bar is the count of new appointments created that day.</p>
+        </div>
+        <div class="chart-card-body">
+          <div class="bar-chart-root" id="barRoot" role="img" aria-label="Bookings by day"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var q = new URLSearchParams(location.search);
+      var st = q.get('setToken');
+      var ret = q.get('returnLogin');
+      if (st) {
+        localStorage.setItem('aakritiPortalToken', st);
+        if (ret) localStorage.setItem('aakritiPortalReturnLogin', ret);
+        q.delete('setToken');
+        q.delete('returnLogin');
+        var qs = q.toString();
+        history.replaceState({}, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+      }
+    })();
+    var API = '/api/aakriti/portal';
+    function authHeaders() {
+      var t = localStorage.getItem('aakritiPortalToken');
+      return { 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json' };
+    }
+    function portalLogout() {
+      localStorage.removeItem('aakritiPortalToken');
+      localStorage.removeItem('aakritiPortalRole');
+      localStorage.removeItem('aakritiPortalUsername');
+      var ret = localStorage.getItem('aakritiPortalReturnLogin');
+      localStorage.removeItem('aakritiPortalReturnLogin');
+      window.location.href = ret || '/aakriti/login';
+    }
+    async function api(path, opts) {
+      var o = opts || {};
+      var h = Object.assign({}, authHeaders(), o.headers || {});
+      var res = await fetch(path, Object.assign({}, o, { headers: h }));
+      var json = await res.json().catch(function(){ return {}; });
+      if (res.status === 401) { portalLogout(); throw new Error('Session expired'); }
+      if (!res.ok) throw new Error(json.message || 'Request failed');
+      return json;
+    }
+    function applyRoleUI(role) {
+      var isAdmin = role === 'admin';
+      document.body.classList.toggle('role-admin', isAdmin);
+      document.body.classList.toggle('role-staff', !isAdmin);
+    }
+    /** Month 1–12. Respects leap years (Feb 29). */
+    function daysInCalendarMonth(year, month1to12) {
+      return new Date(year, month1to12, 0).getDate();
+    }
+    function padMonthDays(year, month1to12, byDay) {
+      var map = {};
+      (byDay || []).forEach(function(d) {
+        if (d && d.date) map[d.date] = d.count;
+      });
+      var n = daysInCalendarMonth(year, month1to12);
+      var out = [];
+      for (var day = 1; day <= n; day++) {
+        var mm = String(month1to12).padStart(2, '0');
+        var dd = String(day).padStart(2, '0');
+        var key = year + '-' + mm + '-' + dd;
+        out.push({ date: key, count: map[key] != null ? map[key] : 0 });
+      }
+      return out;
+    }
+    function renderBars(days) {
+      var max = Math.max.apply(null, days.map(function(d) { return d.count; }).concat([1]));
+      var el = document.getElementById('barRoot');
+      el.innerHTML =
+        '<div class="bar-chart">' +
+        days.map(function(d) {
+          var h = Math.round((d.count / max) * 100);
+          var dayLabel = d.date.slice(-2);
+          return (
+            '<div class="bar-col">' +
+            '<span class="bar-val">' + d.count + '</span>' +
+            '<div class="bar-track"><div class="bar" style="height:' + h + '%" title="' + d.date + ': ' + d.count + '"></div></div>' +
+            '<span class="bar-x">' + dayLabel + '</span>' +
+            '</div>'
+          );
+        }).join('') +
+        '</div>';
+    }
+    async function loadAnalytics() {
+      var errEl = document.getElementById('err');
+      errEl.style.display = 'none';
+      try {
+        var y = parseInt(document.getElementById('selYear').value, 10);
+        var m = parseInt(document.getElementById('selMonth').value, 10);
+        var q = new URLSearchParams({ year: String(y), month: String(m) });
+        var data = await api(API + '/analytics/month?' + q.toString());
+        var d = data.data;
+        document.getElementById('statTotal').textContent = String(d.total || 0);
+        document.getElementById('statCustomer').textContent = String((d.byType && d.byType.customer) || 0);
+        document.getElementById('statAdmin').textContent = String((d.byType && d.byType.admin) || 0);
+        document.getElementById('statStaff').textContent = String((d.byType && d.byType.staff) || 0);
+        document.getElementById('chartTitle').textContent =
+          'Bookings by day — ' + y + '-' + String(m).padStart(2, '0');
+        var days = padMonthDays(y, m, d.byDay || []);
+        renderBars(days);
+      } catch (e) {
+        errEl.textContent = e.message || 'Failed to load';
+        errEl.style.display = 'block';
+      }
+    }
+    function initSelectors() {
+      var now = new Date();
+      var yr = document.getElementById('selYear');
+      var mo = document.getElementById('selMonth');
+      var yMin = 2026;
+      var yMax = 2040;
+      var yCur = now.getFullYear();
+      var ySel = yCur < yMin ? yMin : yCur > yMax ? yMax : yCur;
+      for (var y = yMin; y <= yMax; y++) {
+        var o = document.createElement('option');
+        o.value = String(y);
+        o.textContent = String(y);
+        if (y === ySel) o.selected = true;
+        yr.appendChild(o);
+      }
+      for (var m = 1; m <= 12; m++) {
+        var o2 = document.createElement('option');
+        o2.value = String(m);
+        o2.textContent = new Date(2000, m - 1, 1).toLocaleString(undefined, { month: 'long' });
+        if (m === now.getMonth() + 1) o2.selected = true;
+        mo.appendChild(o2);
+      }
+    }
+    function openSideMenu() {
+      document.getElementById('sideMenu').classList.add('is-open');
+      document.getElementById('sideMenuBackdrop').classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSideMenu() {
+      document.getElementById('sideMenu').classList.remove('is-open');
+      document.getElementById('sideMenuBackdrop').classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('btnOpenSideMenu').addEventListener('click', openSideMenu);
+    document.getElementById('sideMenuBackdrop').addEventListener('click', closeSideMenu);
+    document.getElementById('sideMenu').addEventListener('click', function(ev) {
+      var navTarget = ev.target.closest('a.nav-item, button.nav-item');
+      if (!navTarget) return;
+      if (navTarget.id === 'sideMenuLogout') { closeSideMenu(); portalLogout(); return; }
+      closeSideMenu();
+    });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSideMenu(); });
+    async function boot() {
+      var t = localStorage.getItem('aakritiPortalToken');
+      if (!t) {
+        window.location.href = localStorage.getItem('aakritiPortalReturnLogin') || '/aakriti/login';
+        return;
+      }
+      var r = await fetch(API + '/me', { headers: authHeaders() });
+      var j = await r.json().catch(function(){ return {}; });
+      if (!r.ok || j.status !== 'success') { portalLogout(); return; }
+      applyRoleUI(j.data.role);
+      var su = document.getElementById('sidebarUser');
+      if (su) su.textContent = j.data.username || (j.data.role === 'admin' ? 'Admin' : 'Staff');
+      initSelectors();
+      await loadAnalytics();
+    }
+    boot();
+  </script>
+</body>
+</html>

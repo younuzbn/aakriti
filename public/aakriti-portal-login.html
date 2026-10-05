@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aakriti — Sign in</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --nav: #23292c;
+      --bg-top: #f5f5f5;
+      --bg-bottom: #ebebeb;
+      --panel: #ffffff;
+      --border: #e5e5e5;
+      --input-border: #d4d4d4;
+      --text: #0a0a0a;
+      --muted: #737373;
+      --primary: #23292c;
+      --primary-hover: #1a1f22;
+      --accent-ring: rgba(35, 41, 44, 0.22);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: "DM Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: linear-gradient(165deg, var(--bg-top) 0%, var(--bg-bottom) 52%, #e0e0e0 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .shell {
+      width: 100%;
+      max-width: 420px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(10, 10, 10, 0.08);
+      overflow: hidden;
+    }
+    .head {
+      background: var(--nav);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .head img { height: 52px; width: auto; max-width: 100%; object-fit: contain; }
+    .head p { margin: 12px 0 0; color: rgba(255,255,255,0.75); font-size: 14px; }
+    .body { padding: 28px 24px 32px; }
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    input {
+      width: 100%;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 15px;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--accent-ring);
+    }
+    .btn {
+      width: 100%;
+      cursor: pointer;
+      background: var(--primary);
+      border: 1px solid var(--primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-top: 8px;
+    }
+    .btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+    .err {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #fef2f2;
+      color: #991b1b;
+      font-size: 14px;
+    }
+    .hint { margin-top: 16px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .divider {
+      margin: 24px 0;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+    details.create-wrap { margin-top: 8px; }
+    details.create-wrap > summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      padding: 8px 0;
+      user-select: none;
+    }
+    details.create-wrap > summary::-webkit-details-marker { display: none; }
+    details.create-wrap > summary::after { content: ' ▾'; opacity: 0.6; }
+    details.create-wrap[open] > summary::after { content: ' ▴'; }
+    .create-fields { margin-top: 12px; padding-top: 8px; }
+    select.role-select {
+      width: 100%;
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 15px;
+      background: #fff;
+    }
+    .btn-secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--input-border);
+      margin-top: 12px;
+    }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); background: #fafafa; }
+    .ok-msg {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #ecfdf5;
+      color: #065f46;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="head">
+      <img src="/aakriti-logo.png" alt="Aakriti Boutique &amp; Makeup Studio" />
+      <p>Admin or staff sign in</p>
+    </div>
+    <div class="body">
+      <div id="err" class="err"></div>
+      <form id="form">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" placeholder="e.g. admin or your staff name" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="btn" id="btn">Sign in</button>
+      </form>
+      <p class="hint">Use your admin or staff username and password. Admins can also add team members after signing in.</p>
+
+      <hr class="divider" />
+
+      <details class="create-wrap" id="createWrap">
+        <summary>Create admin or staff account</summary>
+        <div class="create-fields">
+          <div id="createOk" class="ok-msg"></div>
+          <div id="createErr" class="err"></div>
+          <form id="createForm">
+            <div class="field">
+              <label for="regUsername">New username</label>
+              <input id="regUsername" autocomplete="off" placeholder="letters, numbers, dot, hyphen, underscore" required />
+            </div>
+            <div class="field">
+              <label for="regPassword">Password</label>
+              <input id="regPassword" type="password" autocomplete="new-password" required minlength="6" />
+            </div>
+            <div class="field">
+              <label for="regPassword2">Confirm password</label>
+              <input id="regPassword2" type="password" autocomplete="new-password" required minlength="6" />
+            </div>
+            <div class="field">
+              <label for="regRole">Account type</label>
+              <select id="regRole" class="role-select" required>
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="masterPassword">Master password</label>
+              <input id="masterPassword" type="password" autocomplete="off" required placeholder="Same as AAKRITI_ADMIN_PASSWORD on server" />
+            </div>
+            <p class="hint" style="margin-top:0;">The master password is the value of <code style="font-size:12px;">AAKRITI_ADMIN_PASSWORD</code> in your server <code style="font-size:12px;">.env</code>. It authorizes creating new accounts without logging in first.</p>
+            <button type="submit" class="btn btn-secondary" id="createBtn">Create account</button>
+          </form>
+        </div>
+      </details>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var form = document.getElementById('form');
+      var err = document.getElementById('err');
+      var btn = document.getElementById('btn');
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        err.style.display = 'none';
+        btn.disabled = true;
+        btn.textContent = 'Signing in…';
+        try {
+          var res = await fetch('/api/aakriti/portal/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: document.getElementById('username').value,
+              password: document.getElementById('password').value
+            })
+          });
+          var j = await res.json().catch(function(){ return {}; });
+          if (!res.ok || j.status !== 'success') {
+            throw new Error(j.message || 'Sign in failed');
+          }
+          localStorage.setItem('aakritiPortalToken', j.data.token);
+          localStorage.setItem('aakritiPortalRole', j.data.role);
+          localStorage.setItem('aakritiPortalUsername', j.data.username || '');
+          window.location.href = '/aakriti/dashboard';
+        } catch (x) {
+          err.textContent = x.message || 'Sign in failed';
+          err.style.display = 'block';
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Sign in';
+        }
+      });
+
+      var createForm = document.getElementById('createForm');
+      var createErr = document.getElementById('createErr');
+      var createOk = document.getElementById('createOk');
+      var createBtn = document.getElementById('createBtn');
+      createForm.addEventListener('submit', async function(e){
+        e.preventDefault();
+        createErr.style.display = 'none';
+        createOk.style.display = 'none';
+        var p1 = document.getElementById('regPassword').value;
+        var p2 = document.getElementById('regPassword2').value;
+        if (p1 !== p2) {
+          createErr.textContent = 'Passwords do not match';
+          createErr.style.display = 'block';
+          return;
+        }
+        createBtn.disabled = true;
+        createBtn.textContent = 'Creating…';
+        try {
+          var res = await fetch('/api/aakriti/portal/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: document.getElementById('regUsername').value,
+              password: p1,
+              role: document.getElementById('regRole').value,
+              masterPassword: document.getElementById('masterPassword').value
+            })
+          });
+          var j = await res.json().catch(function(){ return {}; });
+          if (!res.ok || j.status !== 'success') {
+            throw new Error(j.message || 'Could not create account');
+          }
+          createOk.textContent = 'Account created. You can sign in above with the new username and password.';
+          createOk.style.display = 'block';
+          createForm.reset();
+          document.getElementById('createWrap').open = false;
+        } catch (x) {
+          createErr.textContent = x.message || 'Failed';
+          createErr.style.display = 'block';
+        } finally {
+          createBtn.disabled = false;
+          createBtn.textContent = 'Create account';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
